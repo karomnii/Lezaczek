@@ -7,6 +7,7 @@ class Calendar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Plan zajęć',
         ),
@@ -14,24 +15,17 @@ class Calendar extends StatelessWidget {
         scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.newspaper,
-                size: 30,
-              ),
-              label: 'Wydarzenia'
+      body: Container(
+        color: Colors.white,
+        child: Center(
+          child: Text(
+            'In development',
+            style: TextStyle(
+              fontSize: 24
+            ),
           ),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.calendar_month,
-                size: 30,
-              ),
-              label: 'Plan zajęć'
-          )
-        ],
-      ),
+        ),
+      )
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'incoming_events.dart';
+import 'template_screen.dart';
 class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -7,7 +7,7 @@ class Button extends StatelessWidget {
       TextButton(
         onPressed: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => IncomingEvents())
+              MaterialPageRoute(builder: (context) => TemplateScreen())
           );
         },
         child: Text(
