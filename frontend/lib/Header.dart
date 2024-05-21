@@ -4,7 +4,7 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(25),
+      padding: EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -13,7 +13,7 @@ class Header extends StatelessWidget {
               "Leżaczek",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 48,
+                fontSize: 45,
               ),
             ),
           ),
@@ -23,7 +23,7 @@ class Header extends StatelessWidget {
           Center(
             child: Text(
               "Welcome to our community !!!",
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           )
         ],
