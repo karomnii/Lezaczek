@@ -91,4 +91,67 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<properties>
+    			<start-class>backend.lezaczek.LezaczekApplication</start-class>
+				<java.version>17</java.version>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<id>test</id>
+			<build>
+			<plugins>
+				<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+					<phase>compile</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+						<target>
+						<delete file="${project.build.outputDirectory}/application.properties"/>
+						<copy file="src/main/resources/application.test.properties"
+								tofile="${project.build.outputDirectory}/application.properties"/>
+						<delete file="${project.build.outputDirectory}/application.test.properties"/>
+						</target>
+					</configuration>
+					</execution>
+				</executions>
+				</plugin>
+				<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				</plugin>
+				<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+					<configuration>
+						<classifier>test</classifier>
+						<archive>
+							      <manifest>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<addClasspath>true</addClasspath>
+									<mainClass>backend.lezaczek.LezaczekApplication</mainClass>
+								</manifest>
+						</archive>
+					</configuration>
+					</execution>
+				</executions>
+				</plugin>
+			</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
