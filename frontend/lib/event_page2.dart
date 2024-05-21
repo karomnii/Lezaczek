@@ -100,7 +100,7 @@ class EventPage2 extends StatelessWidget {
                   )
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.only(bottom: 30),
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
@@ -122,24 +122,6 @@ class EventPage2 extends StatelessWidget {
               ),
             ],
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.newspaper,
-                size: 30,
-              ),
-              label: 'Wydarzenia'
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.calendar_month,
-                size: 30,
-              ),
-              label: 'Plan zajęć'
-          )
         ],
       ),
     );
