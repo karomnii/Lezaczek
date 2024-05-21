@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'Button.dart';
-import '../InputField.dart';
+import 'Button2.dart';
+import 'InputField.dart';
 
 class InputWrapper extends StatelessWidget {
   @override
@@ -24,8 +25,11 @@ class InputWrapper extends StatelessWidget {
           ),
           SizedBox(height: 40,),
           Button(),
+          SizedBox(height: 40,),
+          Button2(),
         ],
       ),
     );
   }
 }
+

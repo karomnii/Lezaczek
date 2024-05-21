@@ -1,29 +1,38 @@
 import 'package:flutter/material.dart';
-import 'incoming_events.dart';
+
 class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return
-      TextButton(
-        onPressed: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => IncomingEvents())
-          );
-        },
-        child: Text(
-          'Login',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: () {
+        // Tutaj możesz umieścić kod obsługujący kliknięcie przycisku
+        print("Button clicked!");
+      },
+      child: Container(
+        height: 50,
+        margin: EdgeInsets.symmetric(horizontal: 50),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(73, 211, 242, 1),
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(73, 211, 242, 1),
+              spreadRadius: 2,
+              blurRadius: 6,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            "Login",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      style: TextButton.styleFrom(
-        backgroundColor: Colors.cyan[500],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80)
       ),
     );
   }

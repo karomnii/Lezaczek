@@ -23,8 +23,8 @@ class LoginPage extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(100),
-                    topRight: Radius.circular(100),
+                    topLeft: Radius.circular(70),
+                    topRight: Radius.circular(70),
                   )),
               child: InputWrapper(),
             ))
