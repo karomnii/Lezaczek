@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/side_bar.dart';
 
 import 'event_page1.dart';
 import 'event_page2.dart';
-import 'side_bar.dart';
 
 class IncomingEvents extends StatefulWidget {
   const IncomingEvents({super.key});
