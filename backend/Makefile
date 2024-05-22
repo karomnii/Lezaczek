@@ -1,5 +1,8 @@
 ifneq ($(ENVIRONMENT), "PRODUCTION")
 	TESTER_IDF := src/test/env/tester
+	# SQL_SERVER_TESTS := jdbc:sqlserver://localhost
+	# TESTER_USER := sa
+	# TESTER_PASS := 12345
 endif
 SERVER_IP := $(SERVER_IP)
 VERSION := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
