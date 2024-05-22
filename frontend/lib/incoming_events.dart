@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'event_page1.dart';
 import 'event_page2.dart';
-import 'calendar.dart';
+import 'side_bar.dart';
 
 class IncomingEvents extends StatefulWidget {
   const IncomingEvents({super.key});
@@ -16,8 +16,8 @@ class _IncomingEventsState extends State<IncomingEvents> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: SideBar(),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: const Text(
           'Nadchodzące wydarzenia',
         ),
@@ -76,6 +76,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black,
+                                                    fontWeight: FontWeight.normal
                                                   ),
                                                 ),
                                                 Text(
@@ -83,6 +84,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black,
+                                                      fontWeight: FontWeight.normal
                                                   ),
                                                 ),
                                               ],
@@ -97,6 +99,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black,
+                                                      fontWeight: FontWeight.normal
                                                   ),
                                                 ),
                                               )
@@ -110,6 +113,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black,
+                                                      fontWeight: FontWeight.normal
                                                   ),
                                                   textAlign: TextAlign.right,
                                                 ),
@@ -155,6 +159,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black,
+                                                      fontWeight: FontWeight.normal
                                                   ),
                                                 ),
                                                 Text(
@@ -162,6 +167,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black,
+                                                      fontWeight: FontWeight.normal
                                                   ),
                                                 ),
                                               ],
@@ -176,6 +182,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black,
+                                                      fontWeight: FontWeight.normal
                                                   ),
                                                 ),
                                               )
@@ -189,6 +196,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.black,
+                                                      fontWeight: FontWeight.normal
                                                   ),
                                                   textAlign: TextAlign.right,
                                                 ),

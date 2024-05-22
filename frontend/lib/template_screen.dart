@@ -21,6 +21,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
     return Scaffold(
       body: screens[internIndex],
       bottomNavigationBar: NavigationBar(
+        animationDuration: Duration(milliseconds: 600),
         onDestinationSelected: (index){
           setState(() {
             internIndex = index;
