@@ -26,6 +26,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
+      env:
         SQL_SERVER_PROD: ${{ env.SQL_SERVER_TESTS }}
         SQL_SERVER_USER: ${{ env.TESTER_USER }}
         SQL_SERVER_PASS: ${{ secrets.TESTER_SECRET }}
