@@ -16,7 +16,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SideBar(),
+      drawer: const SideBar(),
       appBar: AppBar(
         title: const Text(
           'Nadchodzące wydarzenia',
@@ -30,15 +30,15 @@ class _IncomingEventsState extends State<IncomingEvents> {
             color: Colors.white,
             child: Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(right: 3),
+                  padding: const EdgeInsets.only(right: 3),
                   child: Scrollbar(
                     thumbVisibility: true,
                     thickness: 3,
                     radius: const Radius.circular(10),
                     child: SingleChildScrollView(
-                        physics: BouncingScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(7, 0, 7, 10),
+                          padding: const EdgeInsets.fromLTRB(7, 0, 7, 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
@@ -54,7 +54,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                   child: TextButton(
                                       onPressed: () {
                                         Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (context) => EventPage1())
+                                            MaterialPageRoute(builder: (context) => const EventPage1())
                                         );
                                       },
                                       style: TextButton.styleFrom(
@@ -137,7 +137,7 @@ class _IncomingEventsState extends State<IncomingEvents> {
                                   child: TextButton(
                                       onPressed: () {
                                         Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (context) => EventPage2())
+                                            MaterialPageRoute(builder: (context) => const EventPage2())
                                         );
                                       },
                                       style: TextButton.styleFrom(

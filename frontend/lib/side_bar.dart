@@ -10,8 +10,8 @@ class SideBar extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-              accountName: Text('Imię i nazwisko'),
-              accountEmail: Text('adres@domena.com'),
+              accountName: const Text('Imię i nazwisko'),
+              accountEmail: const Text('adres@domena.com'),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.asset(
@@ -20,22 +20,22 @@ class SideBar extends StatelessWidget {
                 ),
               ),
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Color(0xffa4bf41)
             ),
           ),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
                 Icons.add
             ),
-            title: Text('Dodaj do planu'),
+            title: const Text('Dodaj do planu'),
             onTap: () {},
           ),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
                 Icons.edit_calendar_rounded
             ),
-            title: Text('Edytuj plan'),
+            title: const Text('Edytuj plan'),
             onTap: () {},
           ),
           Divider(
@@ -43,17 +43,17 @@ class SideBar extends StatelessWidget {
             color: Colors.grey[300],
           ),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
                 Icons.add_circle
             ),
-            title: Text('Dodaj wydarzenie'),
+            title: const Text('Dodaj wydarzenie'),
             onTap: () {},
           ),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
                 Icons.edit
             ),
-            title: Text('Edytuj wydarzenia'),
+            title: const Text('Edytuj wydarzenia'),
             onTap: () {},
           ),
           Divider(
@@ -61,10 +61,10 @@ class SideBar extends StatelessWidget {
             color: Colors.grey[300],
           ),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
                 Icons.logout
             ),
-            title: Text('Wyloguj się'),
+            title: const Text('Wyloguj się'),
             onTap: () {
               showDialog(
                   context: context,
@@ -77,26 +77,26 @@ class SideBar extends StatelessWidget {
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text(
+                              child: const Text(
                                   'Zamknij',
                               )
                           ),
                           TextButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => LoginPage())
+                                    builder: (context) => const LoginPage())
                                 );
                               },
-                              child: Text(
+                              child: const Text(
                                   'Wyloguj',
                               ),
                           ),
                         ],
                       )
                     ],
-                    title: Text('Wylogowanie'),
-                    content: Text('Czy na pewno chcesz się wylogować?'),
-                    contentTextStyle: TextStyle(
+                    title: const Text('Wylogowanie'),
+                    content: const Text('Czy na pewno chcesz się wylogować?'),
+                    contentTextStyle: const TextStyle(
                       fontSize: 16,
                       color: Colors.black
                     ),
@@ -105,11 +105,11 @@ class SideBar extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
                 Icons.delete_forever_rounded,
               color: Colors.red,
             ),
-            title: Text(
+            title: const Text(
                 'Usuń konto',
             style: TextStyle(
               color: Colors.red
@@ -127,7 +127,7 @@ class SideBar extends StatelessWidget {
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Nie'),
+                              child: const Text('Nie'),
                           ),
                           TextButton(
                             onPressed: () {
@@ -138,14 +138,14 @@ class SideBar extends StatelessWidget {
                                     actions: [
                                       TextButton(
                                           onPressed: () {
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginPage()));
                                           },
-                                          child: Text('Zamknij'),
+                                          child: const Text('Zamknij'),
                                       ),
                                     ],
-                                    title: Text('Sukces'),
-                                    content: Text('Twoje konto zostało usunięte. Zaraz nastąpi wylogowanie'),
-                                    contentTextStyle: TextStyle(
+                                    title: const Text('Sukces'),
+                                    content: const Text('Twoje konto zostało usunięte. Zaraz nastąpi wylogowanie'),
+                                    contentTextStyle: const TextStyle(
                                         fontSize: 16,
                                         color: Colors.black
                                     ),
@@ -164,9 +164,9 @@ class SideBar extends StatelessWidget {
                         ],
                       )
                     ],
-                    title: Text('Usuwanie konta'),
-                    content: Text('Czy na pewno chcesz usunąć swoje konto na stałe?'),
-                    contentTextStyle: TextStyle(
+                    title: const Text('Usuwanie konta'),
+                    content: const Text('Czy na pewno chcesz usunąć swoje konto na stałe?'),
+                    contentTextStyle: const TextStyle(
                         fontSize: 16,
                         color: Colors.black
                     ),

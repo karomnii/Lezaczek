@@ -4,28 +4,30 @@ import 'Button.dart';
 import '../InputField.dart';
 
 class InputWrapper extends StatelessWidget {
+  const InputWrapper({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(30),
+      padding: const EdgeInsets.all(30),
       child: SingleChildScrollView(
-        physics: ClampingScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         child: Column(
           children: <Widget>[
-            SizedBox(height: 40,),
+            const SizedBox(height: 40,),
             Container(decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
-              child: InputField(),
+              child: const InputField(),
             ),
-            SizedBox(height: 40,),
-            Text(
+            const SizedBox(height: 40,),
+            const Text(
               "Forgot password",
               style: TextStyle(color: Colors.grey),
             ),
-            SizedBox(height: 40,),
-            Button(),
+            const SizedBox(height: 40,),
+            const Button(),
           ],
         ),
       )

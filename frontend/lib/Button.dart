@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'template_screen.dart';
 class Button extends StatelessWidget {
+  const Button({super.key});
+
   @override
   Widget build(BuildContext context) {
     return
       TextButton(
         onPressed: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => TemplateScreen())
+              MaterialPageRoute(builder: (context) => const TemplateScreen())
           );
         },
-        child: Text(
+      style: TextButton.styleFrom(
+        backgroundColor: Colors.cyan[500],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 80)
+      ),
+        child: const Text(
           'Login',
           style: TextStyle(
             color: Colors.white,
@@ -18,13 +27,6 @@ class Button extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-      style: TextButton.styleFrom(
-        backgroundColor: Colors.cyan[500],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80)
-      ),
     );
   }
 }

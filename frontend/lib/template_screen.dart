@@ -12,8 +12,8 @@ class TemplateScreen extends StatefulWidget {
 class _TemplateScreenState extends State<TemplateScreen> {
   int internIndex = 0;
    final List<Widget> screens = [
-    Calendar(),
-    IncomingEvents(),
+    const Calendar(),
+    const IncomingEvents(),
    ];
 
   @override
@@ -21,14 +21,14 @@ class _TemplateScreenState extends State<TemplateScreen> {
     return Scaffold(
       body: screens[internIndex],
       bottomNavigationBar: NavigationBar(
-        animationDuration: Duration(milliseconds: 600),
+        animationDuration: const Duration(milliseconds: 600),
         onDestinationSelected: (index){
           setState(() {
             internIndex = index;
           });
         },
         selectedIndex: internIndex,
-        destinations: [
+        destinations: const [
           NavigationDestination(
             selectedIcon: Icon(
               Icons.calendar_month_rounded,

@@ -3,12 +3,14 @@ import 'Header.dart';
 import 'InputWrapper.dart';
 
 class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topCenter, colors: [
             Color(0xFF41BF6D), // Pierwszy kolor: 41BF6D
             Color(0xFF49D3F2), // Drugi kolor: 49D3F2
@@ -16,17 +18,17 @@ class LoginPage extends StatelessWidget {
         ),
         child: Column(
           children: <Widget>[
-            SizedBox(height: 80),
-            Header(),
+            const SizedBox(height: 80),
+            const Header(),
             Expanded(
                 child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(100),
                     topRight: Radius.circular(100),
                   )),
-              child: InputWrapper(),
+              child: const InputWrapper(),
             ))
           ],
         ),
