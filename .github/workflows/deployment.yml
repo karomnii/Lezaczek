@@ -5,13 +5,15 @@
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
+
 name: Backend Deployment
 
 on:
   workflow_run:
     workflows: [Backend Tests]
     types: [completed]
-  branch: [main]
+  push: 
+    branches: [main]
 jobs:  
   deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
