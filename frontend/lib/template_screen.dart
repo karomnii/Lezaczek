@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'incoming_events.dart';
-import 'calendar.dart';
+import 'pages/calendar/calendar.dart';
 class TemplateScreen extends StatefulWidget {
   const TemplateScreen({super.key});
 
