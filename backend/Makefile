@@ -1,21 +1,23 @@
-ROOT_DIR:=$(realpath $(shell dirname $(firstword $(MAKEFILE_LIST))))
-RUN_TEST_ENV := $(ROOT_DIR)/src/test/env/run_test_env
-PHONY: all
-all:
-	mvn compile
+TESTER_IDF := src/test/env/tester
+VERSION := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+build:
+	rm -rf target
+	mvn compile -P production
 
 test-build:
 	rm -rf target
 	mvn compile -P test
-	mvn package -P test
 
 run-test-build: test-build
 	mvn exec:java
 
-deploy-test-build: test-build
-	ssh-keyscan 3.120.246.59 >> ~/.ssh/known_hosts
-	scp -i src/test/env/tester target/lezaczek-0.0.1-SNAPSHOT.jar tester@3.120.246.59:/application/spring/lezaczek/lezaczek.jar
-	ssh tester@3.120.246.59 '/application/spring/lezaczek/run_test_env'
+package-build: build
+	mvn package -P production
 
-stop-test-env:
-	ssh tester@3.120.246.59 '/application/spring/lezaczek/stop_test_env'
+deploy-build: package-build
+	ssh-keyscan 3.79.107.101 >> ~/.ssh/known_hosts
+	scp -i $(TESTER_IDF) target/lezaczek-$(VERSION).jar tester@3.79.107.101:/application/spring/lezaczek/lezaczek.jar
+	ssh -i $(TESTER_IDF) tester@3.79.107.101 -f '/application/spring/lezaczek/run_prod'
+
+stop-prod:
+	ssh -i $(TESTER_IDF) tester@3.79.107.101 -f '/application/spring/lezaczek/stop_prod'

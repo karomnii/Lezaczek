@@ -10,10 +10,11 @@
 	</parent>
 	<groupId>backend</groupId>
 	<artifactId>lezaczek</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>lezaczek</name>
 	<description>backend for lezaczek project</description>
 	<properties>
+		<start-class>backend.lezaczek.LezaczekApplication</start-class>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
@@ -93,10 +94,6 @@
 
 	<profiles>
 		<profile>
-			<properties>
-    			<start-class>backend.lezaczek.LezaczekApplication</start-class>
-				<java.version>17</java.version>
-			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -128,26 +125,40 @@
 					<skip>true</skip>
 				</configuration>
 				</plugin>
+			</plugins>
+			</build>
+		</profile>
+		<profile>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<id>production</id>
+			<build>
+			<plugins>
 				<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
+				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
-					<phase>package</phase>
+					<phase>compile</phase>
 					<goals>
-						<goal>jar</goal>
+						<goal>run</goal>
 					</goals>
 					<configuration>
-						<classifier>test</classifier>
-						<archive>
-							      <manifest>
-									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-									<addClasspath>true</addClasspath>
-									<mainClass>backend.lezaczek.LezaczekApplication</mainClass>
-								</manifest>
-						</archive>
+						<target>
+						<delete file="${project.build.outputDirectory}/application.properties"/>
+						<copy file="src/main/resources/application.properties"
+								tofile="${project.build.outputDirectory}/application.properties"/>
+						<delete file="${project.build.outputDirectory}/application.test.properties"/>
+						</target>
 					</configuration>
 					</execution>
 				</executions>
+				</plugin>
+				<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 				</plugin>
 			</plugins>
 			</build>
