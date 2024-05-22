@@ -1,4 +1,7 @@
-TESTER_IDF := src/test/env/tester
+ifneq ($(ENVIRONMENT), "PRODUCTION")
+	TESTER_IDF := src/test/env/tester
+endif
+SERVER_IP := $(SERVER_IP)
 VERSION := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 build:
 	rm -rf target
@@ -15,9 +18,9 @@ package-build: build
 	mvn package -P production
 
 deploy-build: package-build
-	ssh-keyscan 3.79.107.101 >> ~/.ssh/known_hosts
-	scp -i $(TESTER_IDF) target/lezaczek-$(VERSION).jar tester@3.79.107.101:/application/spring/lezaczek/lezaczek.jar
-	ssh -i $(TESTER_IDF) tester@3.79.107.101 -f '/application/spring/lezaczek/run_prod'
+	ssh-keyscan $(SERVER_IP) >> ~/.ssh/known_hosts
+	scp$(if $(filter-out $(ENVIRONMENT), "PRODUCTION"), -i $(TESTER_IDF)) target/lezaczek-$(VERSION).jar tester@$(SERVER_IP):/application/spring/lezaczek/lezaczek.jar
+	ssh$(if $(filter-out $(ENVIRONMENT), "PRODUCTION"), -i $(TESTER_IDF)) tester@$(SERVER_IP) -f '/application/spring/lezaczek/run_prod'
 
 stop-prod:
-	ssh -i $(TESTER_IDF) tester@3.79.107.101 -f '/application/spring/lezaczek/stop_prod'
+	ssh$(if $(filter-out $(ENVIRONMENT), "PRODUCTION"), -i $(TESTER_IDF)) tester@$(SERVER_IP) -f '/application/spring/lezaczek/stop_prod'
