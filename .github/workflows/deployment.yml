@@ -20,6 +20,9 @@ jobs:
         env:
           SERVER_IP: ${{ env.SERVER_IP }}
           ENVIRONMENT: ${{ env.ENVIRONMENT }}
+          SQL_SERVER_PROD: ${{ env.SQL_SERVER_PROD }}
+          SQL_SERVER_USER: ${{ env.SQL_SERVER_USER }}
+          SQL_SERVER_PASS: ${{ secrets.SQL_SERVER_PASS }}
         working-directory: ./backend
         run: make deploy-build
 
