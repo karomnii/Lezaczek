@@ -4,6 +4,8 @@ import 'Header.dart';
 import 'InputWrapper2.dart';
 
 class LoginPage2 extends StatelessWidget {
+  const LoginPage2({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +14,7 @@ class LoginPage2 extends StatelessWidget {
       // ),
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topCenter, colors: [
             Color(0xFF41BF6D), // Pierwszy kolor: 41BF6D
             Color(0xFF49D3F2), // Drugi kolor: 49D3F2
@@ -20,17 +22,17 @@ class LoginPage2 extends StatelessWidget {
         ),
         child: Column(
           children: <Widget>[
-            SizedBox(height: 80),
-            Header(),
+            const SizedBox(height: 80),
+            const Header(),
             Expanded(
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(70),
                         topRight: Radius.circular(70),
                       )),
-                  child: InputWrapper2(),
+                  child: const InputWrapper2(),
                 ))
           ],
         ),
