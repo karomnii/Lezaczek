@@ -20,7 +20,7 @@ public class Event implements Serializable {
     @Getter @Setter private int userID;
     @Getter @Setter private String name;
     @Getter @Setter private String description;
-    @Getter @Setter private int place;
+    @Getter @Setter private String place;
     @Getter @Setter private EventType eventType;
     @Getter @Setter private Timestamp dateAdded;
     @Getter @Setter private Date dateStart;
@@ -30,7 +30,7 @@ public class Event implements Serializable {
 
     public Event() {}
 
-    public Event(String eventId, int userID, String name, String description, int place,EventType eventType, Timestamp dateAdded, Date dateStart, Date dateEnd, Time startingTime, Time endingTime) {
+    public Event(String eventId, int userID, String name, String description, String place,EventType eventType, Timestamp dateAdded, Date dateStart, Date dateEnd, Time startingTime, Time endingTime) {
         this.eventId = Integer.parseInt(eventId);
         this.userID = userID;
         this.name = name;
@@ -47,15 +47,15 @@ public class Event implements Serializable {
     @Override
     public String toString() {
         return "{" +
-                "eventId:" + eventId +
-                ", userID:'" + userID + '\'' +
-                ", name:'" + name + '\'' +
-                ", description:'" + description + '\'' +
-                ", place:" + place +
-                ", eventType:" + eventType +
-                ", dateAdded:" + dateAdded +
-                ", dateStart:" + dateStart +
-                ", startingTime:'" + startingTime + '\'' +
-                ", endingTime:" + endingTime;
+                "\"eventId\":\"" + eventId + '\"' +
+                ", \"userID\":\"" + userID + '\"' +
+                ", \"name\":\"" + name + '\"' +
+                ", \"description\":\"" + description + '\"' +
+                ", \"place\":\"" + place + '\"' +
+                ", \"eventType\":\"" + eventType + '\"' +
+                ", \"dateAdded\":\"" + dateAdded + '\"' +
+                ", \"dateStart\":\"" + dateStart + '\"' +
+                ", \"startingTime\":\"" + startingTime + '\"' +
+                ", \"endingTime\":\"" + endingTime + '\"' + "}";
     }
 }
