@@ -7,11 +7,11 @@ endif
 SERVER_IP := $(SERVER_IP)
 VERSION := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 build:
-	rm -rf target
+	mvn clean
 	mvn compile -P production
 
 test-build:
-	rm -rf target
+	mvn clean
 	mvn compile -P test
 
 run-test-build: test-build
