@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'side_bar.dart';
 
 class Calendar extends StatelessWidget {
   const Calendar({super.key});
@@ -6,8 +7,8 @@ class Calendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const SideBar(),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: const Text(
           'Plan zajęć',
         ),
@@ -17,7 +18,7 @@ class Calendar extends StatelessWidget {
       ),
       body: Container(
         color: Colors.white,
-        child: Center(
+        child: const Center(
           child: Text(
             'In development',
             style: TextStyle(

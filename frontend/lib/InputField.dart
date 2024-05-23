@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 class InputField extends StatelessWidget {
+  const InputField({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
               border: Border(
             bottom: BorderSide(color: Colors.grey[200] ?? Colors.grey),
           )),
-          child: TextField(
+          child: const TextField(
             decoration: InputDecoration(
               hintText: "Enter your Email",
               hintStyle: TextStyle(color: Colors.grey),
@@ -20,12 +22,12 @@ class InputField extends StatelessWidget {
           ),
         ),
         Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
               border: Border(
             bottom: BorderSide(color: Colors.grey[200] ?? Colors.grey),
           )),
-          child: TextField(
+          child: const TextField(
             decoration: InputDecoration(
               hintText: "Enter your Passoword",
               hintStyle: TextStyle(color: Colors.grey),
