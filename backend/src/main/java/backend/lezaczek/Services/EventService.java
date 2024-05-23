@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
-import backend.lezaczek.Interfaces.EventsRepository;
-
 import backend.lezaczek.Model.Event;
+import backend.lezaczek.Repositories.EventsRepository;
 
 @Service
 public class EventService {

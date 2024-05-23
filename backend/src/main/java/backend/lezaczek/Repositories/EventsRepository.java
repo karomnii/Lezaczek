@@ -1,4 +1,4 @@
-package backend.lezaczek.Interfaces;
+package backend.lezaczek.Repositories;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
