@@ -41,14 +41,14 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "{" +
-                "userId:" + userId +
-                ", name:'" + name + '\'' +
-                ", email:'" + email + '\'' +
-                ", surname:'" + surname + '\'' +
-                ", IsAdmin:" + IsAdmin +
-                ", timeCreated:" + timeCreated +
-                ", lastLogin:" + lastLogin +
-                ", password:'" + password + '\'' +
-                ", userGender:" + userGender;
+                "\"userId\":\"" + userId + "\"" +
+                ", \"name\":\"" + name + "\"" +
+                ", \"email\":\"" + email + "\"" +
+                ", \"surname\":\"" + surname + "\"" +
+                ", \"IsAdmin\":\"" + IsAdmin + "\"" +
+                ", \"timeCreated\":\"" + timeCreated + "\"" +
+                ", \"lastLogin\":\"" + lastLogin + "\"" +
+                ", \"password\":\"" + password + "\"" +
+                ", \"userGender\":\"" + userGender + "\"" + "}";
     }
 }
