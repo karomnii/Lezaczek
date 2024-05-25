@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +14,9 @@ import backend.lezaczek.HttpInterfaces.AuthResponse;
 import backend.lezaczek.HttpInterfaces.ErrorResponse;
 import backend.lezaczek.HttpInterfaces.LoginRequest;
 import backend.lezaczek.HttpInterfaces.RegisterRequest;
+import backend.lezaczek.HttpInterfaces.Request;
 import backend.lezaczek.HttpInterfaces.Response;
+import backend.lezaczek.Interceptors.SessionHandler;
 import backend.lezaczek.Model.User;
 import backend.lezaczek.Services.AuthService;
 import backend.lezaczek.Services.UserService;
@@ -21,6 +24,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,6 +40,8 @@ public class AuthController {
     private AuthService authService;
     @Autowired
     JwtTokenHelper jwtTokenHelper;
+    @Autowired
+    SessionHandler sessionHandler;
 
     private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 minutes
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -71,8 +77,27 @@ public class AuthController {
         refreshTokenCookie.setMaxAge((int) REFRESH_TOKEN_EXPIRATION / 1000);
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
-        Response authResponse = new AuthResponse(accessToken, refreshToken);
+        AuthResponse authResponse = new AuthResponse(accessToken, refreshToken);
         return ResponseEntity.ok(authResponse.toJsonString());
+    }
+    @GetMapping(value = "/refresh", produces = {"application/json"})
+    public ResponseEntity<?> refresh(Request<String, String> requestBody, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if(!sessionHandler.checkSession(request, response)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new ErrorResponse("Token not found").toJsonString());
+        }
+        String userId;
+        try {
+            userId = jwtTokenHelper.extractClaims(request).toString();
+            String accessToken = jwtTokenHelper.generateToken(String.valueOf(userId), ACCESS_TOKEN_EXPIRATION);
+            Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+            accessTokenCookie.setHttpOnly(true);
+            accessTokenCookie.setSecure(true);
+            accessTokenCookie.setPath("/");
+            response.addCookie(accessTokenCookie);
+            return ResponseEntity.ok(new AuthResponse(accessToken).toJsonString());
+        } catch (Throwable s) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
     @PutMapping(value = "/register", produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -94,7 +119,7 @@ public class AuthController {
         }
         User user = new User(registerRequest);
         userService.saveUser(user);
-        return ResponseEntity.ok(new Response(Map.of("ok", "ok")));
+        return ResponseEntity.ok(new Response("ok"));
     }
     
 }

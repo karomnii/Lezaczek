@@ -3,12 +3,15 @@ package backend.lezaczek.Helpers;
 import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Value;
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtTokenHelper {
@@ -28,7 +31,16 @@ public class JwtTokenHelper {
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
-
+    public Claims extractClaims(HttpServletRequest request) throws Throwable {
+        String token;
+        for (Cookie cookie : request.getCookies()){
+            if (cookie.getName().equals("refreshToken")){
+                token = cookie.getValue();
+                return extractClaims(token);
+            }
+        }
+        throw new Throwable("no cookie");
+    }
     public Claims extractClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET)
@@ -37,7 +49,12 @@ public class JwtTokenHelper {
     }
 
     public boolean isTokenExpired(String token) {
-        return extractClaims(token).getExpiration().before(new Date(System.currentTimeMillis()));
+        try {
+            extractClaims(token).getExpiration().before(new Date(System.currentTimeMillis()));
+        } catch (ExpiredJwtException e){
+            return true;
+        }
+        return false;
     }
 
     public String extractUsername(String token) {
