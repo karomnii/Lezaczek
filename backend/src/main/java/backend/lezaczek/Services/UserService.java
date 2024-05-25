@@ -1,5 +1,6 @@
 package backend.lezaczek.Services;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class UserService {
         return usersRepository.findAll();
     }
     public User saveUser(User user) {
+        user.setIsAdmin(0);
+        user.setTimeCreated(new Date(System.currentTimeMillis()));
+        System.out.println("Salt before save:" + user.getSalt());
         return usersRepository.save(user);
     }
     public User findByEmail(String email) {

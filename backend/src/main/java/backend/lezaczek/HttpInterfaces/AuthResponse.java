@@ -1,16 +1,14 @@
 package backend.lezaczek.HttpInterfaces;
 
-import java.io.IOException;
+import java.util.Map;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.Getter;
 import lombok.Setter;
 
-public class AuthResponse {
+public class AuthResponse extends Response {
     @Getter @Setter private String accessToken;
-    public AuthResponse(String accessToken) {
-        this.accessToken = accessToken;
+    public AuthResponse(String accessToken, String refreshToken) {
+        super(Map.of("accessToken", accessToken, "refreshToken", refreshToken));
     }
 
 }

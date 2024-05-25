@@ -3,7 +3,7 @@ package backend.lezaczek.HttpInterfaces;
 import lombok.Getter;
 import lombok.Setter;
 
-public class LoginRequest {
+public class LoginRequest extends Request<String, Object> {
     @Getter @Setter private String email;
     @Getter @Setter private String password;
 
