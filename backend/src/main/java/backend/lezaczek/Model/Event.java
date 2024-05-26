@@ -46,7 +46,7 @@ public class Event implements Serializable {
     }
     @Override
     public String toString() {
-        return "{" +
+        return "[" + "{" +
                 "\"eventId\":\"" + eventId + '\"' +
                 ", \"userID\":\"" + userID + '\"' +
                 ", \"name\":\"" + name + '\"' +
@@ -56,6 +56,6 @@ public class Event implements Serializable {
                 ", \"dateAdded\":\"" + dateAdded + '\"' +
                 ", \"dateStart\":\"" + dateStart + '\"' +
                 ", \"startingTime\":\"" + startingTime + '\"' +
-                ", \"endingTime\":\"" + endingTime + '\"' + "}";
+                ", \"endingTime\":\"" + endingTime + '\"' + "}" + "]";
     }
 }
