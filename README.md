@@ -44,6 +44,25 @@ To connect backend to the database, export these Environment variables with corr
 - TESTER_PASS
 - JWT_SECRET
 
-Alternatively you can edit **application.test.properties** file in *backend/src/main/resources*
+Alternatively you can edit **application.test.test.properties** file in *backend/src/main/resources*
 
 If these are correctly set you should be able to run **make run-test-build** in *backend* folder
+
+## API Description
+
+    GET /api/v1/hello
+    Used to verify if http server is running. Returns "Greetings from Spring Boot!"
+
+    POST /api/v1/auth/login
+    Accepts JSON in format {email:String, password:String}.
+    Returns {response:"ok", refreshToken:String, accessToken:String} or {response:"error", errorReason:String}
+    Sends Cookies accessToken (httpOnly, Secure, path:"/") and refreshToken (httpOnly, Secure, path:"/api/v1/auth/refresh")
+
+    PUT /api/v1/auth/register
+    Accepts JSON in format {email:String, name:String, surname: String, password: String, gender: [0-2]}.
+    Returns {response: "ok"} or {response: "error", errorReason:String}
+
+    POST /api/v1/auth/refresh
+    Accepts Cookie authToken or Cookie refreshToken.
+    Returns new accessToken cookie and JSON {response:"ok",accessToken:String} or {response:"error", errorReason:String}, without the cookie
+
