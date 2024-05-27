@@ -27,14 +27,19 @@ If your emulator is already set up:
 2. Choose Chrome (web) or Edge (web) from the list
 3. Run 'main.dart' configuration. After a while, the application will start.
 
-## Backend
-To locally run backend you have to have MS SQL server running
+## Backend to develop
+To locally run backend you have to have MS SQL server running and have the TCP/IP option in Sql server configuration manager enabled
+Have apache maven installed our version is 3.9.6
+Have Java jdk with JAVA_HOME and Path set correctly, our version is jdk-17
+Have the make installed for using a makefile
+
+Import the database from database/lezaczek.sql
 
 To connect backend to the database, export these Environment variables with correct values:
 - SQL_SERVER_TESTS (in format jdbc:sqlserver://(hostname);databaseName=(name);)
 - TEST_USER
 - TESTER_PASS
-
+- JWT_SECRET
 Alternatively you can edit **application.properties** file in *src/main/resources*
 
 If these are correctly set you should be able to run **make run-test-build** in *backend* folder
