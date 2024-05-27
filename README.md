@@ -27,14 +27,42 @@ If your emulator is already set up:
 2. Choose Chrome (web) or Edge (web) from the list
 3. Run 'main.dart' configuration. After a while, the application will start.
 
-## Backend
-To locally run backend you have to have MS SQL server running
+## Backend to develop
+To locally run backend you have to have MS SQL server running and have the TCP/IP option in Sql server configuration manager enabled
+
+Have apache maven installed our version is 3.9.6
+
+Have Java jdk with JAVA_HOME and Path set correctly, our version is jdk-17
+
+Have the make installed for using a makefile
+
+Import the database from database/lezaczek.sql
 
 To connect backend to the database, export these Environment variables with correct values:
 - SQL_SERVER_TESTS (in format jdbc:sqlserver://(hostname);databaseName=(name);)
 - TEST_USER
 - TESTER_PASS
+- JWT_SECRET
 
-Alternatively you can edit **application.properties** file in *src/main/resources*
+Alternatively you can edit **application.test.test.properties** file in *backend/src/main/resources*
 
 If these are correctly set you should be able to run **make run-test-build** in *backend* folder
+
+## API Description
+
+    GET /api/v1/hello
+    Used to verify if http server is running. Returns "Greetings from Spring Boot!"
+
+    POST /api/v1/auth/login
+    Accepts JSON in format {email:String, password:String}.
+    Returns {response:"ok", refreshToken:String, accessToken:String} or {response:"error", errorReason:String}
+    Sends Cookies accessToken (httpOnly, Secure, path:"/") and refreshToken (httpOnly, Secure, path:"/api/v1/auth/refresh")
+
+    PUT /api/v1/auth/register
+    Accepts JSON in format {email:String, name:String, surname: String, password: String, gender: [0-2]}.
+    Returns {response: "ok"} or {response: "error", errorReason:String}
+
+    POST /api/v1/auth/refresh
+    Accepts Cookie authToken or Cookie refreshToken.
+    Returns new accessToken cookie and JSON {response:"ok",accessToken:String} or {response:"error", errorReason:String}, without the cookie
+
