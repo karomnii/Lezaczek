@@ -44,6 +44,6 @@ To connect backend to the database, export these Environment variables with corr
 - TESTER_PASS
 - JWT_SECRET
 
-Alternatively you can edit **application.properties** file in *src/main/resources*
+Alternatively you can edit **application.test.properties** file in *backend/src/main/resources*
 
 If these are correctly set you should be able to run **make run-test-build** in *backend* folder
