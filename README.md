@@ -29,8 +29,11 @@ If your emulator is already set up:
 
 ## Backend to develop
 To locally run backend you have to have MS SQL server running and have the TCP/IP option in Sql server configuration manager enabled
+
 Have apache maven installed our version is 3.9.6
+
 Have Java jdk with JAVA_HOME and Path set correctly, our version is jdk-17
+
 Have the make installed for using a makefile
 
 Import the database from database/lezaczek.sql
