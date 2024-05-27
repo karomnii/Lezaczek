@@ -1,11 +1,15 @@
 package backend.lezaczek.HttpInterfaces;
 
 import lombok.Getter;
-import lombok.Setter;
 
-public class ErrorResponse {
-    @Getter @Setter String error;
+public class ErrorResponse extends Response {
+    @Getter String errorReason;
     public ErrorResponse(String errorReason){
-        this.error = errorReason;
+        super("error");
+        this.errorReason = errorReason;
+    }
+    public String toJsonString(){
+        return "{\"" + super.toString() + ",\"errorReason\":\""+this.errorReason+"\"}";
+        
     }
 }
