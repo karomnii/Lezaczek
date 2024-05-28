@@ -1,7 +1,6 @@
 package backend.lezaczek.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import backend.lezaczek.Helpers.JwtTokenHelper;
@@ -40,11 +39,10 @@ public class EventService {
         return eventsRepository.save(event);
     }
 
-    public Event updateEvent(Long id, Event eventDetails, int userId) {
-        Optional<Event> eventOptional = eventsRepository.findById(id);
+    public Event updateEvent(Event eventDetails) {
+        Optional<Event> eventOptional = eventsRepository.findById(Long.valueOf(eventDetails.getEventId()));
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
-            if (event.getUserID() == userId) {
                 event.setName(eventDetails.getName());
                 event.setDescription(eventDetails.getDescription());
                 event.setPlace(eventDetails.getPlace());
@@ -54,16 +52,15 @@ public class EventService {
                 event.setStartingTime(eventDetails.getStartingTime());
                 event.setEndingTime(eventDetails.getEndingTime());
                 return eventsRepository.save(event);
-            } else {
-                throw new RuntimeException("User not authorized to update this event");
-            }
         } else {
-            throw new RuntimeException("Event not found with id " + id);
+            throw new RuntimeException("Event not found with id " + eventDetails.getEventId());
         }
     }
 
-    public void deleteEvent(Long id, int userId) {
+    public void deleteEvent(Long id, HttpServletRequest request) {
         Optional<Event> eventOptional = eventsRepository.findById(id);
+        //Long userId=Long.parseLong(jwtTokenHelper.extractClaims(request));
+        Long userId=1L;
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             if (event.getUserID() == userId) {
@@ -79,6 +76,16 @@ public class EventService {
     public boolean eventMatchesUser(Event event, HttpServletRequest request){
         //Long userId=Long.parseLong(jwtTokenHelper.extractClaims(request));
         Long userId=1L;
+        if (event.getUserID() != userId) return false;
+        return true;
+    }
+
+    public boolean eventIdMatchesUser(Long eventId, HttpServletRequest request){
+        //Long userId=Long.parseLong(jwtTokenHelper.extractClaims(request));
+        Long userId=1L;
+        Optional<Event> eventOpt = eventsRepository.findById(eventId);
+        if (eventOpt.isEmpty()) return false;
+        Event event = eventOpt.get();
         if (event.getUserID() != userId) return false;
         return true;
     }
