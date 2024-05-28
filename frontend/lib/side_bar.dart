@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'LoginPage.dart';
+import 'models/user.dart';
 class SideBar extends StatelessWidget {
-  const SideBar({super.key});
+  final ValueNotifier<User?> user;
+  const SideBar({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +87,7 @@ class SideBar extends StatelessWidget {
                           TextButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const LoginPage())
+                                    builder: (context) => LoginPage(user: ValueNotifier(null)))
                                 );
                               },
                               child: const Text(
@@ -138,7 +141,7 @@ class SideBar extends StatelessWidget {
                                     actions: [
                                       TextButton(
                                           onPressed: () {
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginPage()));
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage(user: ValueNotifier(null))));
                                           },
                                           child: const Text('Zamknij'),
                                       ),

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'Header.dart';
-import 'InputWrapper.dart';
+import 'LoginWrapper.dart';
+import 'models/user.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
-
+  const LoginPage({super.key, required this.user});
+  final ValueNotifier<User?> user;
   @override
   Widget build(BuildContext context) {
+    debugPrint('user: $user');
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -28,7 +30,7 @@ class LoginPage extends StatelessWidget {
                     topLeft: Radius.circular(100),
                     topRight: Radius.circular(100),
                   )),
-              child: const InputWrapper(),
+              child: LoginWrapper(user: user),
             ))
           ],
         ),

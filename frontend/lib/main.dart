@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'LoginPage.dart';
+import 'template_screen.dart';
+import 'models/user.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -9,10 +11,10 @@ class MyApp extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-
-    return const MaterialApp(
+  final userNotifier = ValueNotifier<User?>(null);
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: TemplateScreen(user: userNotifier),
     );
   }
 }

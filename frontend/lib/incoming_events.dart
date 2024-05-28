@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/side_bar.dart';
 
 import 'event_page1.dart';
 import 'event_page2.dart';
@@ -16,7 +15,6 @@ class _IncomingEventsState extends State<IncomingEvents> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const SideBar(),
       appBar: AppBar(
         title: const Text(
           'Nadchodzące wydarzenia',

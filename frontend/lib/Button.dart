@@ -1,16 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'template_screen.dart';
+import 'models/user.dart';
 class Button extends StatelessWidget {
-  const Button({super.key});
+  final AsyncCallback callback;
+  const Button({super.key, required this.callback});
 
   @override
   Widget build(BuildContext context) {
     return
       TextButton(
         onPressed: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const TemplateScreen())
-          );
+          callback();
         },
       style: TextButton.styleFrom(
         backgroundColor: Colors.cyan[500],
