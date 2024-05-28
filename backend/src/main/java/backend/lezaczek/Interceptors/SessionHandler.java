@@ -39,8 +39,8 @@ public class SessionHandler implements HandlerInterceptor {
             }
         }
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.getWriter().write(new ErrorResponse("Token not found").toJsonString());
-        return false;
+        //response.getWriter().write(new ErrorResponse("Token not found").toJsonString());
+        return true;
     }
     private boolean isValidAccessToken(String accessToken, HttpServletResponse response) throws IOException{
         if(jwtTokenHelper.isTokenExpired(accessToken)) {
