@@ -161,5 +161,4 @@ public class NewsService {
         return !news.getName().isEmpty() && !news.getDescription().isEmpty() && !news.getPlace().isEmpty()
                 && news.getStartingTime().isBefore(news.getEndingTime());
     }
-
 }
