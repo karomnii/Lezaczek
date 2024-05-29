@@ -43,4 +43,15 @@ public class News {
         this.startingTime = startingTime;
         this.endingTime = endingTime;
     }
+
+    public News(int userId, String name, String description, String place, LocalDate dateAdded, LocalDate dateOfEvent, LocalTime startingTime, LocalTime endingTime) {
+        this.userId = userId;
+        this.name = name;
+        this.description = description;
+        this.place = place;
+        this.dateAdded = dateAdded;
+        this.dateOfEvent = dateOfEvent;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
+    }
 }
