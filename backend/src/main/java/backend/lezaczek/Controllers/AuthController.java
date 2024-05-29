@@ -81,7 +81,7 @@ public class AuthController {
     @GetMapping(value = "/refresh", produces = {"application/json"})
     public ResponseEntity<?> refresh(Request<String, String> requestBody, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if(!sessionHandler.checkSession(request, response)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new ErrorResponse("Token not found").toJsonString());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new ErrorResponse("Invalid authorization token").toJsonString());
         }
         String userId;
         try {

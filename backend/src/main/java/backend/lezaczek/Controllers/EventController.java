@@ -1,10 +1,10 @@
 package backend.lezaczek.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import backend.lezaczek.HttpInterfaces.ErrorResponse;
 import backend.lezaczek.HttpInterfaces.EventResponse;
 import backend.lezaczek.HttpInterfaces.Response;
 import backend.lezaczek.Model.Event;
@@ -26,21 +26,15 @@ public class EventController {
     @Autowired
     JwtTokenHelper jwtTokenHelper;
 
-    // not used right now
-    // @GetMapping
-    // public List<Event> getAllEvents() {
-    //     return eventService.getAllEvents();
-    // }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable Long id, HttpServletRequest request) {
         Optional<Event> eventOpt = eventService.getEventById(id);
         if (eventOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.badRequest().body(new ErrorResponse("Event not found"));
         }
         Event event = eventOpt.get();
         if (!eventService.eventMatchesUser(event, request)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();  // 403 Forbidden
+            return ResponseEntity.badRequest().body(new ErrorResponse("Event does not belong to user"));
         }
         return ResponseEntity.ok(new EventResponse(List.of(event)));
     }
@@ -51,47 +45,51 @@ public class EventController {
         try {
             date = Date.valueOf(selectedDate);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  // 400 Bad Request
+            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid date format"));
         }
-        List<Event> eventsList = eventService.getEventsByDate(date, request);
-        return ResponseEntity.ok(new EventResponse(eventsList));
+        try {
+            List<Event> eventsList = eventService.getEventsByDate(date, request);
+            return ResponseEntity.ok(new EventResponse(eventsList));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid authorization token"));
+        }
     }
-    //todo: test and fix error handling
     @PutMapping
     public ResponseEntity<?> createEvent(@RequestBody Event event, HttpServletRequest request) {
-        // Long userId = Long.parseLong(jwtTokenHelper.extractClaims(request));
-        Long userId = 1L;
-        event.setUserID(userId.intValue());
+        try {
+            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            event.setUserID(userId.intValue());
+        } catch (Throwable e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid authorization token"));
+        }
+        // Long userId = 1L; // hardcoded for testing
         Event createdEvent = eventService.createEvent(event);
         if (createdEvent == null) {
-            System.out.println("Failed to create event");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  // 400 Bad Request
+            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid event data"));
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(new EventResponse(List.of(createdEvent)));
+        return ResponseEntity.ok(new EventResponse(List.of(createdEvent)));
     }
-    //todo: test and fix error handling
     @PostMapping
     public ResponseEntity<?> updateEvent(@RequestBody Event event, HttpServletRequest request) {
         if (!eventService.eventMatchesUser(event, request)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();  // 403 Forbidden
+            return ResponseEntity.badRequest().body(new ErrorResponse("Event does not belong to user"));
         }
         try {
             Event updatedEvent = eventService.updateEvent(event);
             return ResponseEntity.ok(new EventResponse(List.of(updatedEvent)));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);  // 403 Forbidden
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         }
     }
-    //todo: test and fix error handling
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id, HttpServletRequest request) {
         try {
             eventService.deleteEvent(id, request);
         } catch (RuntimeException e) {
-            if (e.getMessage().equals("Event not found with id " + id)){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  // 404 Not Found
+            if (e.getMessage().equals("Event not found")){
+                return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
             } else{
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();  // 403 Forbidden
+                return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
             }
         }
         return ResponseEntity.ok(new Response("ok"));

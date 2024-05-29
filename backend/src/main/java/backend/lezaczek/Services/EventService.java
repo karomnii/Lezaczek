@@ -30,11 +30,15 @@ public class EventService {
     }
 
     public List<Event> getEventsByDate(Date selectedDate, HttpServletRequest request) {
-        //Long userId=Long.parseLong(jwtTokenHelper.extractClaims(request));
-        Long userId=1L;
-        return eventsRepository.findByDateUserId(selectedDate, userId.intValue());
+        try {
+            // Long userId = 1L; // hardcoded for testing
+            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            return eventsRepository.findByDateUserId(selectedDate, userId.intValue());
+        } catch (Throwable e) {
+            throw new RuntimeException("Authorization token invalid");
+        }
     }
-
+    
     public Event createEvent(Event event) {
         return eventsRepository.save(event);
     }
@@ -53,40 +57,52 @@ public class EventService {
                 event.setEndingTime(eventDetails.getEndingTime());
                 return eventsRepository.save(event);
         } else {
-            throw new RuntimeException("Event not found with id " + eventDetails.getEventId());
+            throw new RuntimeException("Event not found");
         }
     }
 
     public void deleteEvent(Long id, HttpServletRequest request) {
         Optional<Event> eventOptional = eventsRepository.findById(id);
-        //Long userId=Long.parseLong(jwtTokenHelper.extractClaims(request));
-        Long userId=1L;
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
-            if (event.getUserID() == userId) {
-                eventsRepository.deleteById(id);
-            } else {
-                throw new RuntimeException("User not authorized to delete this event");
+            try {
+                // Long userId = 1L; // hardcoded for testing
+                Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+                if (event.getUserID() == userId) {
+                    eventsRepository.deleteById(id);
+                } else {
+                    throw new RuntimeException("User not authorized to delete this event");
+                }
+            } catch (Throwable e) {
+                throw new RuntimeException("Authorization token invalid");
             }
         } else {
-            throw new RuntimeException("Event not found with id " + id);
+            throw new RuntimeException("Event not found");
         }
     }
 
     public boolean eventMatchesUser(Event event, HttpServletRequest request){
-        //Long userId=Long.parseLong(jwtTokenHelper.extractClaims(request));
-        Long userId=1L;
-        if (event.getUserID() != userId) return false;
+        try {
+            // Long userId = 1L; // hardcoded for testing
+            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            if (event.getUserID() != userId) return false;
+        } catch (Throwable e) {
+            return false;
+        }
         return true;
     }
 
     public boolean eventIdMatchesUser(Long eventId, HttpServletRequest request){
-        //Long userId=Long.parseLong(jwtTokenHelper.extractClaims(request));
-        Long userId=1L;
         Optional<Event> eventOpt = eventsRepository.findById(eventId);
         if (eventOpt.isEmpty()) return false;
         Event event = eventOpt.get();
-        if (event.getUserID() != userId) return false;
+        try {
+            // Long userId = 1L; // hardcoded for testing
+            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            if (event.getUserID() != userId) return false;
+        } catch (Throwable e) {
+            return false;
+        }
         return true;
     }
 }
