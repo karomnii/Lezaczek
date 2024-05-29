@@ -63,11 +63,15 @@ public class EventController {
             return ResponseEntity.badRequest().body(new ErrorResponse("Invalid authorization token"));
         }
         // Long userId = 1L; // hardcoded for testing
-        Event createdEvent = eventService.createEvent(event);
-        if (createdEvent == null) {
-            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid event data"));
+        try {
+            Event createdEvent = eventService.createEvent(event);
+            if (createdEvent == null) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Invalid event data"));
+            }
+            return ResponseEntity.ok(new EventResponse(List.of(createdEvent)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         }
-        return ResponseEntity.ok(new EventResponse(List.of(createdEvent)));
     }
     @PostMapping
     public ResponseEntity<?> updateEvent(@RequestBody Event event, HttpServletRequest request) {

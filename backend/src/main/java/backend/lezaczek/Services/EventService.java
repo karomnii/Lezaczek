@@ -40,6 +40,7 @@ public class EventService {
     }
     
     public Event createEvent(Event event) {
+        validateEvent(event);
         return eventsRepository.save(event);
     }
 
@@ -47,15 +48,16 @@ public class EventService {
         Optional<Event> eventOptional = eventsRepository.findById(Long.valueOf(eventDetails.getEventId()));
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
-                event.setName(eventDetails.getName());
-                event.setDescription(eventDetails.getDescription());
-                event.setPlace(eventDetails.getPlace());
-                event.setEventType(eventDetails.getEventType());
-                event.setDateStart(eventDetails.getDateStart());
-                event.setDateEnd(eventDetails.getDateEnd());
-                event.setStartingTime(eventDetails.getStartingTime());
-                event.setEndingTime(eventDetails.getEndingTime());
-                return eventsRepository.save(event);
+            validateEvent(eventDetails);
+            event.setName(eventDetails.getName());
+            event.setDescription(eventDetails.getDescription());
+            event.setPlace(eventDetails.getPlace());
+            event.setEventType(eventDetails.getEventType());
+            event.setDateStart(eventDetails.getDateStart());
+            event.setDateEnd(eventDetails.getDateEnd());
+            event.setStartingTime(eventDetails.getStartingTime());
+            event.setEndingTime(eventDetails.getEndingTime());
+            return eventsRepository.save(event);
         } else {
             throw new RuntimeException("Event not found");
         }
@@ -104,5 +106,51 @@ public class EventService {
             return false;
         }
         return true;
+    }
+
+    public void validateEvent(Event event) {
+        if (event.getName() == null || event.getName().isEmpty()) {
+            throw new RuntimeException("Event name cannot be empty");
+        }
+        if (event.getDateStart() == null) {
+            throw new RuntimeException("Event start date cannot be empty");
+        }
+        if (event.getDateEnd() == null) {
+            throw new RuntimeException("Event end date cannot be empty");
+        }
+        if (event.getStartingTime() == null) {
+            throw new RuntimeException("Event start time cannot be empty");
+        }
+        if (event.getEndingTime() == null) {
+            throw new RuntimeException("Event end time cannot be empty");
+        }
+        if(event.getDateStart().after(event.getDateEnd())){
+            throw new RuntimeException("Event start date cannot be after end date");
+        }
+        if(event.getStartingTime().after(event.getEndingTime())){
+            throw new RuntimeException("Event start time cannot be after end time");
+        }
+        switch (event.getEventType()) {
+            case SINGLE:
+                if (!event.getDateStart().equals(event.getDateEnd())) {
+                    throw new RuntimeException("Single event must have the same start and end date");
+                }
+                break;
+            case DAILY:
+                if (event.getDateStart().equals(event.getDateEnd())) {
+                    throw new RuntimeException("Daily event must have different start and end date");
+                }
+                break;
+            case WEEKLY:
+                if (event.getDateStart().equals(event.getDateEnd())) {
+                    throw new RuntimeException("Weekly event must have different start and end date");
+                }
+                if (event.getDateStart().toLocalDate().plusDays(7).isAfter(event.getDateEnd().toLocalDate())) {
+                    throw new RuntimeException("Weekly event must last at least 7 days");
+                }
+                break;
+            default:
+                throw new RuntimeException("Invalid event type");
+        }
     }
 }

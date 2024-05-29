@@ -68,6 +68,6 @@ public class JwtTokenHelper {
                 return extractUserId(token);
             }
         }
-        throw new Throwable("no cookie");
+        throw new Throwable("Failed to get access token from cookies");
     }
 }
