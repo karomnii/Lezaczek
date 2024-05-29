@@ -57,7 +57,17 @@ public class JwtTokenHelper {
         return false;
     }
 
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         return extractClaims(token).getSubject();
+    }
+    public String extractUserId(HttpServletRequest request) throws Throwable{
+        String token;
+        for (Cookie cookie : request.getCookies()){
+            if (cookie.getName().equals("accessToken")){
+                token = cookie.getValue();
+                return extractUserId(token);
+            }
+        }
+        throw new Throwable("Failed to get access token from cookies");
     }
 }
