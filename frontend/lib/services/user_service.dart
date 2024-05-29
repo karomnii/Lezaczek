@@ -6,4 +6,7 @@ class UserService {
   static Future<dynamic> login(LoginFormData data) async {
     return _api.login(data);
   }
+  static Future<dynamic> register(RegisterFormData data) async {
+    return _api.register(data);
+  }
 }

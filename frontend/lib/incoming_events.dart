@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'event_page1.dart';
 import 'event_page2.dart';
 

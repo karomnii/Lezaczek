@@ -19,4 +19,16 @@ class UserApi {
     }
     return null;
   }
+  Future<dynamic> register(RegisterFormData data) async {
+    Response response = await HttpHelper.put("http://localhost:8080/api/v1/auth/register", body: data);
+    if (response.statusCode == 200) {
+      var responseJson = json.decode(response.body);
+      debugPrint("response: ${responseJson}");
+      if(responseJson["result"] == "error"){
+        return Error(text: responseJson["errorReason"]);
+      }
+      return true;
+    }
+    return null;
+  }
 }

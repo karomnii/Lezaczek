@@ -83,4 +83,15 @@ class HttpHelper {
       return response;
     });
   }
+  static Future<http.Response> put(String url, {body, encoding}) {
+    final Uri uri = Uri.parse(url);
+    return http
+        .put(
+        uri, body: _encoder.convert(body), headers: headers, encoding: encoding)
+        .then((http.Response response) {
+      _updateCookie(response);
+      debugPrint("existingcookies: ${cookies}");
+      return response;
+    });
+  }
 }
