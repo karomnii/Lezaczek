@@ -7,7 +7,7 @@ import java.util.List;
 
 import backend.lezaczek.Model.Event;
 @ToString
-public class EventResponse extends Response{
+public class EventResponse extends Response {
     @Getter
     private final List<Event> events;
 

@@ -35,17 +35,14 @@ public class EventService {
 
     public List<Event> getEventsByDate(Date selectedDate, HttpServletRequest request) {
         try {
-<<<<<<< HEAD
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
-=======
             // Long userId = 1L; // hardcoded for testing
             Long userId = currentUser.getUserId();
->>>>>>> 7a1024c (Improve session handling, add currentUser property available in incoming requests (#22))
             return eventsRepository.findByDateUserId(selectedDate, userId.intValue());
         } catch (Throwable e) {
             throw new RuntimeException("Authorization token invalid");
         }
     }
+
     public Event createEvent(Event event) {
         validateEvent(event);
         return eventsRepository.save(event);
@@ -90,7 +87,7 @@ public class EventService {
         }
     }
 
-    public boolean eventMatchesUser(Event event, HttpServletRequest request){
+    public boolean eventMatchesUser(Event event, HttpServletRequest request) {
         try {
             // Long userId = 1L; // hardcoded for testing
             Long userId = currentUser.getUserId();
@@ -101,7 +98,7 @@ public class EventService {
         return true;
     }
 
-    public boolean eventIdMatchesUser(Long eventId, HttpServletRequest request){
+    public boolean eventIdMatchesUser(Long eventId, HttpServletRequest request) {
         Optional<Event> eventOpt = eventsRepository.findById(eventId);
         if (eventOpt.isEmpty()) return false;
         Event event = eventOpt.get();
@@ -131,10 +128,10 @@ public class EventService {
         if (event.getEndingTime() == null) {
             throw new RuntimeException("Event end time cannot be empty");
         }
-        if(event.getDateStart().after(event.getDateEnd())){
+        if (event.getDateStart().after(event.getDateEnd())) {
             throw new RuntimeException("Event start date cannot be after end date");
         }
-        if(event.getStartingTime().after(event.getEndingTime())){
+        if (event.getStartingTime().after(event.getEndingTime())) {
             throw new RuntimeException("Event start time cannot be after end time");
         }
         switch (event.getEventType()) {

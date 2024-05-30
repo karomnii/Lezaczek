@@ -22,6 +22,8 @@ import java.util.Optional;
 public class NewsService {
     private final NewsRepository newsRepository;
 
+//    @Autowired
+//    JwtTokenHelper jwtTokenHelper;
     @Autowired
     private final UsersRepository usersRepository;
 
@@ -161,4 +163,5 @@ public class NewsService {
         return !news.getName().isEmpty() && !news.getDescription().isEmpty() && !news.getPlace().isEmpty()
                 && news.getStartingTime().isBefore(news.getEndingTime());
     }
+
 }
