@@ -1,6 +1,7 @@
 package backend.lezaczek.Interceptors;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import backend.lezaczek.Helpers.JwtTokenHelper;
 import backend.lezaczek.HttpInterfaces.ErrorResponse;
+import backend.lezaczek.Model.User;
+import backend.lezaczek.Services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,30 +23,52 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SessionHandler implements HandlerInterceptor {
     @Autowired
     JwtTokenHelper jwtTokenHelper;
-
+    @Autowired
+    UserService userService;
+    @Autowired private User currentUser;
+    
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
         System.out.println("In preHandle");
-        boolean isValidSession = checkSession(request, response);
+        String token = getToken(request, "accessToken");
+        if (!(token.length() > 0)){
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write(new ErrorResponse("Token not found").toJsonString());
+            return false;
+        }
+        boolean isValidSession = checkSession(token, response);
         if (!isValidSession) {
             return false;
         }
+        Long userId = jwtTokenHelper.extractUserId(token);
+        Optional<User> user = userService.findById(userId);
+        if(user.isEmpty()){
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.getWriter().write(new ErrorResponse("No user matches given token").toJsonString());
+            return false;
+        }
+        currentUser.setCurrentUser(user.get());
         return true;
     }
-    public boolean checkSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String getToken(HttpServletRequest request, String tokenName){
         if(request.getCookies() != null){
             for (Cookie cookie : request.getCookies()){
-                if(cookie.getName().equals("accessToken") || cookie.getName().equals("refreshToken")){
-                    return isValidAccessToken(cookie.getValue(), response);
+                if(cookie.getName().equals(tokenName)){
+                    return cookie.getValue();
                 }
             }
         }
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.getWriter().write(new ErrorResponse("Token not found").toJsonString());
+        return "";
+    }
+    public boolean checkSession(String token, HttpServletResponse response) throws IOException {
+        if (token.length() > 0){
+            return isValidToken(token, response);
+        }
+
         return false;
     }
-    private boolean isValidAccessToken(String accessToken, HttpServletResponse response) throws IOException{
-        if(jwtTokenHelper.isTokenExpired(accessToken)) {
+    public boolean isValidToken(String token, HttpServletResponse response) throws IOException{
+        if(jwtTokenHelper.isTokenExpired(token)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(new ErrorResponse("Token expired").toJsonString());
             return false;

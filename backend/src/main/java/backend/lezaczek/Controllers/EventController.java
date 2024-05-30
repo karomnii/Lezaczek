@@ -8,6 +8,7 @@ import backend.lezaczek.HttpInterfaces.ErrorResponse;
 import backend.lezaczek.HttpInterfaces.EventResponse;
 import backend.lezaczek.HttpInterfaces.Response;
 import backend.lezaczek.Model.Event;
+import backend.lezaczek.Model.User;
 import backend.lezaczek.Services.EventService;
 import jakarta.servlet.http.HttpServletRequest;
 import backend.lezaczek.Helpers.JwtTokenHelper;
@@ -25,6 +26,9 @@ public class EventController {
 
     @Autowired
     JwtTokenHelper jwtTokenHelper;
+
+    @Autowired
+    private User currentUser;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable Long id, HttpServletRequest request) {
@@ -57,7 +61,7 @@ public class EventController {
     @PutMapping
     public ResponseEntity<?> createEvent(@RequestBody Event event, HttpServletRequest request) {
         try {
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            Long userId = currentUser.getUserId();
             event.setUserID(userId.intValue());
         } catch (Throwable e) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Invalid authorization token"));
