@@ -3,6 +3,11 @@ package backend.lezaczek.Model;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
+import java.util.Map;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
 
 import backend.lezaczek.HttpInterfaces.RegisterRequest;
 import backend.lezaczek.Services.AuthService;
@@ -13,15 +18,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 // @Getter
 // @Setter
 // @ToString
 @Entity
+@Component
 @Table(name = "Users")
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class User implements Serializable {
     public enum Gender {MALE, FEMALE, OTHER};
-    @Getter @Setter @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int userId;
+    @Getter @Setter @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long userId;
     @Getter @Setter private String name;
     @Getter @Setter private String email;
     @Getter @Setter private String surname;
@@ -32,6 +40,8 @@ public class User implements Serializable {
     @Getter @Setter private String salt;
     @Getter @Setter private Gender userGender;
 
+    @Transient @Getter @Setter private User currentUser;
+    
     public User() {}
 
     public User(RegisterRequest req) {
@@ -43,8 +53,8 @@ public class User implements Serializable {
         this.salt = new String(salt, StandardCharsets.ISO_8859_1);
         this.userGender = req.getGender();
     }
-    public User(String userId, String name, String email, String surname, int IsAdmin, Date timeCreated, Date lastLogin, String password, String salt, Gender userGender) {
-        this.userId = Integer.parseInt(userId);
+    public User(Long userId, String name, String email, String surname, int IsAdmin, Date timeCreated, Date lastLogin, String password, String salt, Gender userGender) {
+        this.userId = userId;
         this.name = name;
         this.email = email;
         this.surname = surname;
@@ -58,8 +68,7 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "{" +
-                "\"userId\":\"" + userId + "\"" +
-                ", \"name\":\"" + name + "\"" +
+                "\"name\":\"" + name + "\"" +
                 ", \"email\":\"" + email + "\"" +
                 ", \"surname\":\"" + surname + "\"" +
                 ", \"IsAdmin\":\"" + IsAdmin + "\"" +
