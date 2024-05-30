@@ -34,4 +34,5 @@ build/
 
 
 ### ENV ###
+.env
 src/test/env

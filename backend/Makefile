@@ -1,16 +1,36 @@
+ifneq (,$(wildcard ./.env))
+	include .env
+	export
+endif
 ifneq ($(ENVIRONMENT), "PRODUCTION")
 	TESTER_IDF := src/test/env/tester
-	# SQL_SERVER_TESTS := jdbc:sqlserver://localhost
-	# TESTER_USER := sa
-	# TESTER_PASS := 12345
+endif
+ifeq ($(SQL_SERVER_TESTS),)
+SQL_SERVER_TESTS:=$(shell bash -c 'read -p "SQL_SERVER_TESTS variable not defined. Specify now: " SQL_SERVER_TESTS; echo $$SQL_SERVER_TESTS')
+endif
+ifeq ($(TEST_USER),)
+TEST_USER:=$(shell bash -c 'read -p "TEST_USER variable not defined. Specify now: " TEST_USER; echo $$TEST_USER')
+endif
+ifeq ($(TESTER_PASS),)
+TESTER_PASS:=$(shell bash -c 'read -p "TESTER_PASS variable not defined. Specify now: " TESTER_PASS; echo $$TESTER_PASS')
+endif
+ifeq ($(JWT_SECRET),)
+JWT_SECRET:=$(shell bash -c 'read -p "JWT_SECRET variable not defined. Specify now: " JWT_SECRET; echo $$JWT_SECRET')
 endif
 SERVER_IP := $(SERVER_IP)
-VERSION := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-build:
+VERSION=$(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+.env:
+	touch $@
+	echo SQL_SERVER_TESTS='$(SQL_SERVER_TESTS)' >> .env; \
+	echo TEST_USER=$(TEST_USER) >> .env; \
+	echo TESTER_PASS=$(TESTER_PASS) >> .env; \
+	echo JWT_SECRET=$(JWT_SECRET) >> .env; \
+
+build: .env
 	mvn clean
 	mvn compile -P production
 
-test-build:
+test-build: .env
 	mvn clean
 	mvn compile -P test
 
