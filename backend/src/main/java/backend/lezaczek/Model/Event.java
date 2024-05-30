@@ -40,5 +40,4 @@ public class Event implements Serializable {
     private Date dateEnd;
     private Time startingTime;
     private Time endingTime;
-
 }

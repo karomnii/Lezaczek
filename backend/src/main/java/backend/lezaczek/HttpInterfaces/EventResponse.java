@@ -15,5 +15,4 @@ public class EventResponse extends Response{
         super("ok");
         this.events = response;
     }
-
 }
