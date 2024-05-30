@@ -38,7 +38,6 @@ public class EventService {
             throw new RuntimeException("Authorization token invalid");
         }
     }
-
     public Event createEvent(Event event) {
         validateEvent(event);
         return eventsRepository.save(event);
