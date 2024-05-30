@@ -8,10 +8,10 @@ In order to run frontend, you need to have installed Android Studio
 4. Install dart & flutter plugins in Android Studio, then restard IDE
 5. Open project **'Lezaczek/frontend'** via Android Studio. **Important:** if Lezaczek will be opened instead of Lezaczek/frontend, errors with pubspec.yaml file and directories will occur
 6. **Dart SDK is not configured** will pop up - click **Open Dart settings** and enter following configuration:
-    a. Enable Dart support for project 'frontend'
-    b. Dart SDK path: *(flutter directory)\flutter\bin\cache\dart-sdk*
-    c. Enable Dart support for the following modules: Project 'frontend'
-    d. Click apply & ok
+    - Enable Dart support for project 'frontend'
+    - Dart SDK path: *(flutter directory)\flutter\bin\cache\dart-sdk*
+    - Enable Dart support for the following modules: Project 'frontend'
+    - Click apply & ok
 7. Warning about pub get dependencies will pop up - click *get dependencies* (alternatively: open terminal and enter *dart pub get*). If there's still problem, try with *upgrade dependencies* (or *dart pub upgrade*)
 ### How to run this project on Android Emulator?
 In case you haven't created any emulators:
