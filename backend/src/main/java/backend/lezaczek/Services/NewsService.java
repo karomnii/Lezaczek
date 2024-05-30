@@ -35,7 +35,7 @@ public class NewsService {
 
     public List<News> getNews(HttpServletRequest request) {
         try {
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            Long userId = jwtTokenHelper.extractUserId(request);
             return newsRepository.findAll();
         }
         catch (Throwable e){
@@ -45,7 +45,7 @@ public class NewsService {
 
     public Optional<News> getNewsById(Long newsId, HttpServletRequest request){
         try {
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            Long userId = jwtTokenHelper.extractUserId(request);
             return newsRepository.findById(newsId);
         }
         catch (Throwable e){
@@ -63,7 +63,7 @@ public class NewsService {
             throw new RuntimeException("Invalid news parameters");
         }
         try {
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            Long userId = jwtTokenHelper.extractUserId(request);
             Optional <User> userOptional = userRepository.findUserByUserId(userId);
             if(userOptional.isPresent()){
                 User user = userOptional.get();
@@ -85,7 +85,7 @@ public class NewsService {
         Optional<News> newsOptional = newsRepository.findById(newsId);
         if(newsOptional.isPresent()){
             try {
-                Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+                Long userId = jwtTokenHelper.extractUserId(request);
                 Optional <User> userOptional = userRepository.findUserByUserId(userId);
                 if(userOptional.isPresent()){
                     User user = userOptional.get();
@@ -117,7 +117,7 @@ public class NewsService {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         try {
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            Long userId = jwtTokenHelper.extractUserId(request);
             Optional <User> userOptional = userRepository.findUserByUserId(userId);
             if(userOptional.isPresent()){
                 User user = userOptional.get();

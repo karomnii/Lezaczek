@@ -22,10 +22,10 @@ public class JwtTokenHelper {
     public void init(){
         System.out.println(SECRET);
     }
-    public String generateToken(String username, long expiration) {
+    public String generateToken(Long userId, Long expiration) {
         System.out.println("generateToken: "+SECRET);
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(String.valueOf(userId))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS256, SECRET)
@@ -57,10 +57,10 @@ public class JwtTokenHelper {
         return false;
     }
 
-    public String extractUserId(String token) {
-        return extractClaims(token).getSubject();
+    public Long extractUserId(String token) {
+        return Long.parseLong(extractClaims(token).getSubject());
     }
-    public String extractUserId(HttpServletRequest request) throws Throwable{
+    public Long extractUserId(HttpServletRequest request) throws Throwable{
         String token;
         for (Cookie cookie : request.getCookies()){
             if (cookie.getName().equals("accessToken")){
