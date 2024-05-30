@@ -22,8 +22,8 @@ import java.util.Optional;
 public class NewsService {
     private final NewsRepository newsRepository;
 
-//    @Autowired
-//    JwtTokenHelper jwtTokenHelper;
+    @Autowired
+    JwtTokenHelper jwtTokenHelper;
     @Autowired
     private final UsersRepository usersRepository;
 
