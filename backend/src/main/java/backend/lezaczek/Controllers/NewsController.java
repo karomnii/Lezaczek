@@ -36,7 +36,7 @@ public class NewsController {
         return newsService.getNews();
     }
 
-    @GetMapping("{newsId}")
+    @GetMapping(path = "{newsId}")
     public ResponseEntity<?> getNewsById(@PathVariable("newsId") Long newsId, HttpServletRequest request) {
         Optional <News> newsOptional = newsService.getNewsById(newsId);
         if(newsOptional.isEmpty()){
