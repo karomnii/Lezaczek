@@ -23,8 +23,8 @@ import java.util.Optional;
 public class NewsService {
     private final NewsRepository newsRepository;
 
-//    @Autowired
-//    JwtTokenHelper jwtTokenHelper;
+    @Autowired
+    JwtTokenHelper jwtTokenHelper;
     @Autowired
     public NewsService(NewsRepository newsRepository) {
         this.newsRepository = newsRepository;
@@ -55,14 +55,14 @@ public class NewsService {
         if(newsOptional.isPresent()){
             News news = newsOptional.get();
             try {
-//                Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
-//                if(news.getUserId() != userId){
-//                    throw new RuntimeException("Authorization failed - you don't have access to that functionality");
-//                }
+                Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+                if(news.getUserId() != userId){
+                    throw new RuntimeException("Authorization failed - you don't have access to that functionality");
+                }
                 newsRepository.deleteById(newsId);
             }
             catch (Throwable e){
-                //throw new RuntimeException("Authorization token is invalid");
+                throw new RuntimeException("Authorization token is invalid");
             }
         }
         else{

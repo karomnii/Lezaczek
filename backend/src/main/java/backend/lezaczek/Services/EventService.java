@@ -31,7 +31,6 @@ public class EventService {
 
     public List<Event> getEventsByDate(Date selectedDate, HttpServletRequest request) {
         try {
-            // Long userId = 1L; // hardcoded for testing
             Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
             return eventsRepository.findByDateUserId(selectedDate, userId.intValue());
         } catch (Throwable e) {
@@ -68,7 +67,6 @@ public class EventService {
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             try {
-                // Long userId = 1L; // hardcoded for testing
                 Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
                 if (event.getUserID() == userId) {
                     eventsRepository.deleteById(id);
@@ -85,7 +83,6 @@ public class EventService {
 
     public boolean eventMatchesUser(Event event, HttpServletRequest request){
         try {
-            // Long userId = 1L; // hardcoded for testing
             Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
             if (event.getUserID() != userId) return false;
         } catch (Throwable e) {
@@ -99,7 +96,6 @@ public class EventService {
         if (eventOpt.isEmpty()) return false;
         Event event = eventOpt.get();
         try {
-            // Long userId = 1L; // hardcoded for testing
             Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
             if (event.getUserID() != userId) return false;
         } catch (Throwable e) {

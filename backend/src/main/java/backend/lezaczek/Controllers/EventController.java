@@ -62,7 +62,6 @@ public class EventController {
         } catch (Throwable e) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Invalid authorization token"));
         }
-        // Long userId = 1L; // hardcoded for testing
         try {
             Event createdEvent = eventService.createEvent(event);
             if (createdEvent == null) {
