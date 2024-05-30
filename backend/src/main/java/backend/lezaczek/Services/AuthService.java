@@ -25,12 +25,12 @@ public class AuthService {
         PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
         Arrays.fill(password, Character.MIN_VALUE);
         try {
-          SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-          return skf.generateSecret(spec).getEncoded();
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            return skf.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-          throw new AssertionError("Error while hashing a password: " + e.getMessage(), e);
+            throw new AssertionError("Error while hashing a password: " + e.getMessage(), e);
         } finally {
-          spec.clearPassword();
+            spec.clearPassword();
         }
     }
     public static byte[] getSalt() {
@@ -43,7 +43,7 @@ public class AuthService {
         Arrays.fill(password, Character.MIN_VALUE);
         if (pwdHash.length != expectedHash.length) return false;
         for (int i = 0; i < pwdHash.length; i++) {
-          if (pwdHash[i] != expectedHash[i]) return false;
+            if (pwdHash[i] != expectedHash[i]) return false;
         }
         return true;
     }
@@ -51,7 +51,7 @@ public class AuthService {
         byte[] salt = dbUser.getSalt().getBytes(StandardCharsets.ISO_8859_1);
         byte[] hashedPassword = dbUser.getPassword().getBytes(StandardCharsets.ISO_8859_1);
         return isExpectedPassword(password.toCharArray(), salt, hashedPassword);
-        
+
     }
-    
+
 }

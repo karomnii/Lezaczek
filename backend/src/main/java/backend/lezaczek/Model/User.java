@@ -14,6 +14,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+// @Getter
+// @Setter
+// @ToString
 @Entity
 @Table(name = "Users")
 public class User implements Serializable {

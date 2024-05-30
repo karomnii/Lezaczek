@@ -1,7 +1,6 @@
 package backend.lezaczek.Controllers;
 
 import java.lang.reflect.Field;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,11 +44,10 @@ public class AuthController {
 
     private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 minutes
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
-    
+
     @PostMapping(value = "/login", produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<?> login(@RequestBody LoginRequest LoginRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("application/json");
-        //TODO: process POST request
         User user;
 
         try {
@@ -83,7 +81,7 @@ public class AuthController {
     @GetMapping(value = "/refresh", produces = {"application/json"})
     public ResponseEntity<?> refresh(Request<String, String> requestBody, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if(!sessionHandler.checkSession(request, response)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new ErrorResponse("Token not found").toJsonString());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new ErrorResponse("Invalid authorization token").toJsonString());
         }
         String userId;
         try {
@@ -101,7 +99,6 @@ public class AuthController {
     }
     @PutMapping(value = "/register", produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //TODO: process PUT request
         response.setContentType("application/json");
         try {
             if(userService.findByEmail(registerRequest.getEmail()) != null) {
@@ -121,5 +118,5 @@ public class AuthController {
         userService.saveUser(user);
         return ResponseEntity.ok(new Response("ok"));
     }
-    
+
 }

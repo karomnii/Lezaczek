@@ -38,7 +38,7 @@ public class SessionHandler implements HandlerInterceptor {
                 }
             }
         }
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+       // response.setStatus(HttpStatus.UNAUTHORIZED.value());
         //response.getWriter().write(new ErrorResponse("Token not found").toJsonString());
         return true;
     }

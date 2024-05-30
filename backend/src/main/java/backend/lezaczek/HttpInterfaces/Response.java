@@ -9,6 +9,6 @@ public class Response {
     }
     @Override
     public String toString() {
-        return "\"result\":\"" + this.result + "\""; 
+        return "\"result\":\"" + this.result + "\"";
     }
 }

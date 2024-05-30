@@ -9,7 +9,7 @@ public class ErrorResponse extends Response {
         this.errorReason = errorReason;
     }
     public String toJsonString(){
-        return "{\"" + super.toString() + ",\"errorReason\":\""+this.errorReason+"\"}";
-        
+        return "{" + super.toString() + ",\"errorReason\":\""+this.errorReason+"\"}";
+
     }
 }
