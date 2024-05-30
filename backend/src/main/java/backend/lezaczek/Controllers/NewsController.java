@@ -1,6 +1,7 @@
 package backend.lezaczek.Controllers;
 
 import backend.lezaczek.HttpInterfaces.ErrorResponse;
+import backend.lezaczek.HttpInterfaces.NewsResponse;
 import backend.lezaczek.HttpInterfaces.Response;
 import backend.lezaczek.Model.News;
 import backend.lezaczek.Services.NewsService;
@@ -35,11 +36,14 @@ public class NewsController {
         return newsService.getNews();
     }
 
-//    @GetMapping("{newsId}")
-//    public ResponseEntity<?> getNewsById(@PathVariable("newsId") Long newsId, HttpServletRequest request) {
-//        Optional <News> newsOptional = newsService.getNewsById(newsId);
-//
-//    }
+    @GetMapping("{newsId}")
+    public ResponseEntity<?> getNewsById(@PathVariable("newsId") Long newsId, HttpServletRequest request) {
+        Optional <News> newsOptional = newsService.getNewsById(newsId);
+        if(newsOptional.isEmpty()){
+            return ResponseEntity.badRequest().body(new ErrorResponse("News not found"));
+        }
+        return ResponseEntity.ok(new NewsResponse(List.of(newsOptional.get())));
+    }
 
     @PostMapping
     public void createNews(@RequestBody News news){
