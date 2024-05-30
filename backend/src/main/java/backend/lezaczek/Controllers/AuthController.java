@@ -45,7 +45,7 @@ public class AuthController {
 
     private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 minutes
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
-    
+
     @PostMapping(value = "/login", produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<?> login(@RequestBody LoginRequest LoginRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("application/json");
@@ -123,5 +123,5 @@ public class AuthController {
         userService.saveUser(user);
         return ResponseEntity.ok(new Response("ok"));
     }
-    
+
 }

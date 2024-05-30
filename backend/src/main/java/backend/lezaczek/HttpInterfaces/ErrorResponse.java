@@ -10,6 +10,5 @@ public class ErrorResponse extends Response {
     }
     public String toJsonString(){
         return "{" + super.toString() + ",\"errorReason\":\""+this.errorReason+"\"}";
-        
     }
 }
