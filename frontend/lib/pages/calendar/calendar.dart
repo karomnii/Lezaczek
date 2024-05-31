@@ -15,6 +15,8 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
+
+  int nextIndex = 1;
   DateTime selectedDate = DateTime.now();
   late Future<List<Event>> futureEvents;
   String? errorMessage;
@@ -83,8 +85,40 @@ class _CalendarState extends State<Calendar> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _refreshEvents();
+  }
+
+  void _refreshEvents() {
+    setState(() {});
+  }
+
+  void _addEvent(Event event) {
+    setState(() {
+      staticEvents.add(event);
+    });
+  }
+
+  void _updateEvent(Event updatedEvent) {
+    setState(() {
+      int index = staticEvents.indexWhere((event) => event.eventId == updatedEvent.eventId);
+      if (index != -1) {
+        staticEvents[index] = updatedEvent;
+      }
+    });
+  }
+
+  void _deleteEvent(Event event) {
+    setState(() {
+      staticEvents.removeWhere((e) => e.eventId == event.eventId);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const SideBar(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Planner'),

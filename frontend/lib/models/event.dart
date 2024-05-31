@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+enum EventType { SINGLE, DAILY, WEEKLY }
 
 enum EventType { SINGLE, DAILY, WEEKLY }
 
