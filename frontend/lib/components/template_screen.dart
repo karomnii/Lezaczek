@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/helpers/http_helper.dart';
 import 'package:frontend/pages/login/LoginPage.dart';
 import 'package:frontend/helpers/storage_helper.dart';
 import 'package:frontend/components/side_bar.dart';
@@ -28,12 +29,22 @@ class _TemplateScreenState extends State<TemplateScreen> {
     super.initState();
   }
   Future<User?> asyncInitUser() async {
-    debugPrint("called asyncInit");
     String? accessToken = await StorageHelper.get("accessToken");
     String? refreshToken = await StorageHelper.get("refreshToken");
-    if (refreshToken != null && accessToken != null){
-      debugPrint("accessTokenOnInit: ${accessToken}");
-      return User(accessToken: accessToken, refreshToken: refreshToken);
+    String? name = await StorageHelper.get("name");
+    String? surname = await StorageHelper.get("surname");
+    String? email = await StorageHelper.get("email");
+    String? gender = await StorageHelper.get("gender");
+    Gender? userGender;
+    if(gender != null) {
+      userGender = Gender.values[int.parse(gender)];
+    }
+    if (refreshToken != null && accessToken != null && userGender != null){
+
+      HttpHelper.setCookieVal("accessToken=${accessToken}");
+      HttpHelper.setCookieVal("refreshToken=${refreshToken}");
+      HttpHelper.updateCookieFromHeaders();
+      return User(accessToken: accessToken, refreshToken: refreshToken, name: name, surname: surname, email: email, gender: userGender);
     }
     return null;
   }

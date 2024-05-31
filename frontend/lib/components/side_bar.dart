@@ -1,7 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/services/user_service.dart';
 import '../helpers/storage_helper.dart';
 import '../models/user.dart';
+import '../../models/error.dart';
+
 class SideBar extends StatelessWidget {
   final ValueNotifier<User?> user;
   const SideBar({super.key, required this.user});
@@ -9,9 +11,58 @@ class SideBar extends StatelessWidget {
   void logout(BuildContext context) {
     Navigator.of(context).pop();
     user.value = null;
-    StorageHelper.delete("accessToken");
-    StorageHelper.delete("refreshToken");
-}
+    StorageHelper.deleteAll();
+  }
+  void deleteAccount(BuildContext context, User userToDelete){
+    var response = UserService.deleteAccount(userToDelete);
+    if (response.runtimeType != Error){
+      Navigator.of(context).pop();
+      user.value = null;
+      StorageHelper.deleteAll();
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) =>
+          AlertDialog(
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Zamknij'),
+              ),
+            ],
+            title: const Text('Sukces'),
+            content: const Text(
+                'Twoje konto zostało usunięte. Zaraz nastąpi wylogowanie'),
+            contentTextStyle: const TextStyle(
+                fontSize: 16,
+                color: Colors.black
+            ),
+          ));
+      return;
+    }
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) =>
+            AlertDialog(
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Zamknij'),
+                ),
+              ],
+              title: const Text('Error'),
+              content: Text(response.runtimeType == Error ? (response as Error).text : "Unexpected error"),
+              contentTextStyle: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black
+              ),
+            ));
+  }
   @override
   Widget build(BuildContext context) =>
     ValueListenableBuilder(valueListenable: user, builder: (BuildContext context, User? currentUser, Widget? child) =>
@@ -141,33 +192,7 @@ class SideBar extends StatelessWidget {
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
-                                  StorageHelper.delete(
-                                      "accessToken");
-                                  StorageHelper.delete(
-                                      "refreshToken");
-                                  Future.delayed(const Duration(milliseconds: 1000), (){ user.value = null; });
-                                  showDialog(
-                                      barrierDismissible: false,
-                                      context: context,
-                                      builder: (context) =>
-                                          AlertDialog(
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text('Zamknij'),
-                                              ),
-                                            ],
-                                            title: const Text('Sukces'),
-                                            content: const Text(
-                                                'Twoje konto zostało usunięte. Zaraz nastąpi wylogowanie'),
-                                            contentTextStyle: const TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.black
-                                            ),
-                                          )
-                                  );
+                                  deleteAccount(context, currentUser!);
                                   //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
                                 },
                                 child: Text(

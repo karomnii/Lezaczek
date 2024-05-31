@@ -9,4 +9,7 @@ class UserService {
   static Future<dynamic> register(RegisterFormData data) async {
     return _api.register(data);
   }
+  static Future<dynamic> deleteAccount(User user) async {
+    return _api.deleteAccount(user);
+  }
 }

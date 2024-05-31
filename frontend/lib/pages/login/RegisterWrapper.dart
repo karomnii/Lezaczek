@@ -17,26 +17,112 @@ class RegisterWrapper extends StatefulWidget {
 }
 
 class _RegisterWrapperState extends State<RegisterWrapper> {
+  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
-  bool registrationFailed = false;
-  String errorText = "Unknown error";
   Gender genderControllerValue = Gender.male;
 
   Future<dynamic> register() async {
+    if(!emailRegex.hasMatch(emailController.text)){
+      showDialog(
+        context: context,
+        builder: (context) =>
+            AlertDialog(
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          'Zamknij',
+                        )
+                    ),
+                  ],
+                )
+              ],
+              title: const Text('Error'),
+              content: const Text('Invalid email format'),
+              contentTextStyle: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black
+              ),
+            ),
+      );
+      emailController.text = "";
+      return null;
+    }
     RegisterFormData data = RegisterFormData(email: emailController.text,
         password: passwordController.text,
         name: nameController.text,
         surname: surnameController.text,
         gender: genderControllerValue);
+
     dynamic response = await UserService.register(data);
-    if (response.runtimeType == Error || response == null) {
-      setState(() {
-        registrationFailed = true;
-        errorText = response?.text;
-      });
+    if(mounted) {
+      if (response.runtimeType == Error || response == null) {
+        showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialog(
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text(
+                            'Zamknij',
+                          )
+                      ),
+                    ],
+                  )
+                ],
+                title: const Text('Sign up failed'),
+                content: Text(
+                    response != null ? response.text : "Unknown error"),
+                contentTextStyle: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black
+                ),
+              ),
+        );
+        return null;
+      }
+      showDialog(
+        context: context,
+        builder: (context) =>
+            AlertDialog(
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          widget.currentScreen.value = "login";
+                        },
+                        child: const Text(
+                          'Zamknij',
+                        )
+                    ),
+                  ],
+                )
+              ],
+              title: const Text('Sign up successful'),
+              content: const Text('You can now login to your account'),
+              contentTextStyle: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black
+              ),
+            ),
+      );
     }
   }
 
@@ -92,12 +178,14 @@ class _RegisterWrapperState extends State<RegisterWrapper> {
                                         textController: surnameController,
                                         hintText: "Surname"),
                                     DropdownButton(
-                                      value: Gender.male,
+                                      value: genderControllerValue,
                                       icon: const Icon(
                                           Icons.arrow_downward_sharp),
                                       elevation: 16,
                                       onChanged: (Gender? value) {
-                                        genderControllerValue = value!;
+                                        setState(() {
+                                          genderControllerValue = value!;
+                                        });
                                       },
                                       items: Gender.values.map((Gender gender) {
                                         return DropdownMenuItem<Gender>(

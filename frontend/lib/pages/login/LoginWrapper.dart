@@ -41,9 +41,12 @@ class _LoginWrapperState extends State<LoginWrapper> {
       });
     } else if (response.runtimeType == User) {
       widget.user.value = response;
-      StorageHelper.write("accessToken", response?.accessToken);
-      StorageHelper.write("refreshToken", response?.refreshToken);
-      debugPrint('response: ${response?.accessToken}');
+      StorageHelper.write("accessToken", response.accessToken);
+      StorageHelper.write("refreshToken", response.refreshToken);
+      StorageHelper.write("name", response.name);
+      StorageHelper.write("surname", response.surname);
+      StorageHelper.write("email", response.email);
+      StorageHelper.write("gender", response.gender.index.toString());
     }
 
     return response;

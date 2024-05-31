@@ -11,7 +11,6 @@ class UserApi {
     
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
-      debugPrint("response: ${responseJson}");
       if(responseJson["result"] == "error"){
         return Error(text: responseJson["errorReason"]);
       }
@@ -21,14 +20,19 @@ class UserApi {
   }
   Future<dynamic> register(RegisterFormData data) async {
     Response response = await HttpHelper.put("http://localhost:8080/api/v1/auth/register", body: data);
-    if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
-      debugPrint("response: ${responseJson}");
       if(responseJson["result"] == "error"){
         return Error(text: responseJson["errorReason"]);
       }
       return true;
+  }
+
+  Future<dynamic> deleteAccount(User user) async {
+    Response response = await HttpHelper.post("http://localhost:8080/api/v1/user/delete", body: {"accessToken": user.accessToken, "refreshToken": user.refreshToken});
+    var responseJson = json.decode(response.body);
+    if(responseJson["result"] == "error"){
+      return Error(text: responseJson["errorReason"]);
     }
-    return null;
+    return true;
   }
 }

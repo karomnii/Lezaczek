@@ -19,11 +19,10 @@ class User {
   String refreshToken;
   User({this.name, this.surname, this.email, this.gender, required this.accessToken, required this.refreshToken});
   factory User.fromJson(Map<String, dynamic> json){
-    debugPrint("json: $json");
-    return User(name: json["name"],
-                surname: json["surname"],
-                email: json["email"],
-                gender: json["gender"],
+    return User(name: json["user"]["name"],
+                surname: json["user"]["surname"],
+                email: json["user"]["email"],
+                gender: Gender.values[int.parse(json["user"]["userGender"])],
                 accessToken: json["accessToken"],
                 refreshToken: json["refreshToken"]);
   }

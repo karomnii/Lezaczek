@@ -9,6 +9,9 @@ class HttpHelper {
 
   static Map<String, String> headers = {"content-type": "application/json"};
   static Map<String, String> cookies = {};
+  static void updateCookieFromHeaders(){
+    headers['cookie'] = _generateCookieHeader();
+  }
   static void _updateCookie(http.Response response) {
     String? allSetCookie = response.headers['set-cookie'];
 
@@ -20,7 +23,7 @@ class HttpHelper {
         var cookies = setCookie.split(';');
 
         for (var cookie in cookies) {
-          _setCookie(cookie);
+          setCookieVal(cookie);
         }
       }
 
@@ -28,7 +31,7 @@ class HttpHelper {
     }
   }
 
-  static void _setCookie(String rawCookie) {
+  static void setCookieVal(String rawCookie) {
     if (rawCookie.length > 0) {
       var keyValue = rawCookie.split('=');
       if (keyValue.length == 2) {
@@ -54,7 +57,7 @@ class HttpHelper {
     String cookie = "";
 
     for (var key in cookies.keys) {
-      if (cookie.length > 0) {
+      if (cookies[key]!.isNotEmpty) {
         cookie += ";";
         cookie += "$key=${cookies[key]}";
       }
@@ -79,7 +82,6 @@ class HttpHelper {
         .then((http.Response response) {
 
       _updateCookie(response);
-      debugPrint("existingcookies: ${cookies}");
       return response;
     });
   }
@@ -90,7 +92,7 @@ class HttpHelper {
         uri, body: _encoder.convert(body), headers: headers, encoding: encoding)
         .then((http.Response response) {
       _updateCookie(response);
-      debugPrint("existingcookies: ${cookies}");
+
       return response;
     });
   }
