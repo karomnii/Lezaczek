@@ -5,11 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -23,7 +20,7 @@ public class News {
     private String name;
     private String description;
     private String place;
-    private LocalDate dateAdded;
+    private LocalDateTime dateAdded;
     private LocalDate dateOfEvent;
     private LocalTime startingTime;
     private LocalTime endingTime;
@@ -31,8 +28,8 @@ public class News {
     public News() {}
 
     public News(int newsId, int userId, String name, String description,
-                String place, LocalDate dateAdded, LocalDate dateOfEvent, LocalTime startingTime,
-                LocalTime endingTime) {
+                String place, LocalDateTime dateAdded, LocalDate dateOfEvent,
+                LocalTime startingTime, LocalTime endingTime) {
         this.newsId = newsId;
         this.userId = userId;
         this.name = name;
@@ -44,12 +41,13 @@ public class News {
         this.endingTime = endingTime;
     }
 
-    public News(int userId, String name, String description, String place, LocalDate dateAdded, LocalDate dateOfEvent, LocalTime startingTime, LocalTime endingTime) {
+    public News(int userId, String name, String description, String place,
+                LocalDate dateOfEvent, LocalTime startingTime,
+                LocalTime endingTime) {
         this.userId = userId;
         this.name = name;
         this.description = description;
         this.place = place;
-        this.dateAdded = dateAdded;
         this.dateOfEvent = dateOfEvent;
         this.startingTime = startingTime;
         this.endingTime = endingTime;

@@ -2,43 +2,58 @@ package backend.lezaczek.Services;
 
 import backend.lezaczek.Helpers.JwtTokenHelper;
 import backend.lezaczek.Model.News;
+import backend.lezaczek.Model.User;
 import backend.lezaczek.Repositories.NewsRepository;
+import backend.lezaczek.Repositories.UsersRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.DateFormatter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class NewsService {
     private final NewsRepository newsRepository;
 
-    @Autowired
+    private UsersRepository userRepository;
+
     JwtTokenHelper jwtTokenHelper;
+
     @Autowired
-    public NewsService(NewsRepository newsRepository) {
+    public NewsService(NewsRepository newsRepository, UsersRepository userRepository, JwtTokenHelper jwtTokenHelper) {
         this.newsRepository = newsRepository;
+        this.userRepository = userRepository;
+        this.jwtTokenHelper = jwtTokenHelper;
     }
 
-    public List<News> getNews() {
-        return newsRepository.findAll();
+    public List<News> getNews(HttpServletRequest request) {
+        try {
+            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            return newsRepository.findAll();
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
     }
 
-    public Optional<News> getNewsById(Long newsId){
-        return newsRepository.findById(newsId);
+    public Optional<News> getNewsById(Long newsId, HttpServletRequest request){
+        try {
+            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            return newsRepository.findById(newsId);
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
     }
 
-    public void addNews(News news) {
+    public void addNews(News news, HttpServletRequest request){
         Optional<News> newsByName = newsRepository.findByName(news.getName());
         if(newsByName.isPresent()){
             throw new RuntimeException("News already exists");
@@ -47,19 +62,43 @@ public class NewsService {
         if(!isValid){
             throw new RuntimeException("Invalid news parameters");
         }
-        newsRepository.save(news);
+        try {
+            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            Optional <User> userOptional = userRepository.findUserByUserId(userId);
+            if(userOptional.isPresent()){
+                User user = userOptional.get();
+                if(user.getIsAdmin() == 1){
+                    news.setDateAdded(LocalDateTime.now());
+                    newsRepository.save(news);
+                }
+                else{
+                    throw new RuntimeException("You don't have permission to this resource");
+                }
+            }
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
     }
 
     public void deleteNews(Long newsId, HttpServletRequest request) {
         Optional<News> newsOptional = newsRepository.findById(newsId);
         if(newsOptional.isPresent()){
-            News news = newsOptional.get();
             try {
                 Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
-                if(news.getUserId() != userId){
-                    throw new RuntimeException("Authorization failed - you don't have access to that functionality");
+                Optional <User> userOptional = userRepository.findUserByUserId(userId);
+                if(userOptional.isPresent()){
+                    User user = userOptional.get();
+                    if(user.getIsAdmin() == 1){
+                        newsRepository.deleteById(newsId);
+                    }
+                    else{
+                        throw new RuntimeException("You don't have permission to this resource");
+                    }
                 }
-                newsRepository.deleteById(newsId);
+                else{
+                    throw new RuntimeException("Authorization token is invalid");
+                }
             }
             catch (Throwable e){
                 throw new RuntimeException("Authorization token is invalid");
@@ -71,13 +110,35 @@ public class NewsService {
     }
 
     @Transactional
-    public News updateNews(Long newsId, String name, String description, String dateOfEvent, String place, String startingTime, String endingTime) {
+    public News updateNews(HttpServletRequest request, Long newsId, String name,
+                           String description, String dateOfEvent, String place,
+                           String startingTime, String endingTime) {
         News news = newsRepository.findById(newsId).orElseThrow(() ->new RuntimeException("News doesn't exist"));
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            Optional <User> userOptional = userRepository.findUserByUserId(userId);
+            if(userOptional.isPresent()){
+                User user = userOptional.get();
+                if(user.getIsAdmin() == 0){
+                    throw new RuntimeException("You don't have permission to this resource");
+                }
+            }
+            else{
+                throw new RuntimeException("Authorization token is invalid");
+            }
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
         if(name != null){
             if(name.isEmpty()){
                 throw new RuntimeException("News name is invalid. Changes discarded");
+            }
+            Optional <News> newsOptional = newsRepository.findByName(name);
+            if(newsOptional.isPresent()){
+                throw new RuntimeException("This event name already exists");
             }
             news.setName(name);
         }

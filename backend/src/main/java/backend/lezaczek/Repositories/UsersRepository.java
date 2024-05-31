@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import backend.lezaczek.Model.User;
 
+import java.util.Optional;
+
 
 @Repository
 public interface UsersRepository extends JpaRepository<User, Long>{
@@ -15,4 +17,7 @@ public interface UsersRepository extends JpaRepository<User, Long>{
     User findByEmail(@Param("email") String email);
 
     User findUserByEmail(String email);
+
+    @Query(value = "SELECT * from Users WHERE userid = :#{#userId}", nativeQuery = true)
+    Optional <User> findUserByUserId(Long userId);
 }
