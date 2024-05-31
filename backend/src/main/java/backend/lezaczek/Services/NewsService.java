@@ -22,9 +22,6 @@ import java.util.Optional;
 public class NewsService {
     private final NewsRepository newsRepository;
 
-    @Autowired
-    JwtTokenHelper jwtTokenHelper;
-    @Autowired
     private final UsersRepository usersRepository;
 
     @Autowired
@@ -74,13 +71,21 @@ public class NewsService {
     public void deleteNews(Long newsId, HttpServletRequest request) {
         Optional<News> newsOptional = newsRepository.findById(newsId);
         if(newsOptional.isPresent()){
-            News news = newsOptional.get();
             try {
                 Long userId = jwtTokenHelper.extractUserId(request);
-                if(news.getUserId() != userId){
-                    throw new RuntimeException("Authorization failed - you don't have access to that functionality");
+                Optional <User> userOptional = usersRepository.findUserByUserId(userId);
+                if(userOptional.isPresent()){
+                    User user = userOptional.get();
+                    if(user.getIsAdmin() == 1){
+                        newsRepository.deleteById(newsId);
+                    }
+                    else{
+                        throw new RuntimeException("You don't have permission to this resource");
+                    }
                 }
-                newsRepository.deleteById(newsId);
+                else{
+                    throw new RuntimeException("Authorization token is invalid");
+                }
             }
             catch (Throwable e){
                 throw new RuntimeException("Authorization token is invalid");
@@ -92,11 +97,26 @@ public class NewsService {
     }
 
     @Transactional
-
     public News updateNews(HttpServletRequest request, Long newsId, String name, String description, String dateOfEvent, String place, String startingTime, String endingTime) {
         News news = newsRepository.findById(newsId).orElseThrow(() ->new RuntimeException("News doesn't exist"));
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            Long userId = jwtTokenHelper.extractUserId(request);
+            Optional <User> userOptional = usersRepository.findUserByUserId(userId);
+            if(userOptional.isPresent()){
+                User user = userOptional.get();
+                if(user.getIsAdmin() == 0){
+                    throw new RuntimeException("You don't have permission to this resource");
+                }
+            }
+            else{
+                throw new RuntimeException("Authorization token is invalid");
+            }
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
         if(name != null){
             if(name.isEmpty()){
                 throw new RuntimeException("News name is invalid. Changes discarded");
