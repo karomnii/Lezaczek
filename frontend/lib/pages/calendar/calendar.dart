@@ -4,40 +4,86 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/models/event.dart';
 import 'package:frontend/data/static_data.dart';
-import 'event_details.dart';
+import '../../side_bar.dart';
+import 'package:frontend/pages/calendar/event_details.dart';
+import 'package:frontend/pages/calendar/event_form.dart';
 
 class Calendar extends StatefulWidget {
-  const Calendar({Key? key}) : super(key: key);
+  const Calendar({super.key});
 
   @override
   _CalendarState createState() => _CalendarState();
 }
 
 class _CalendarState extends State<Calendar> {
+
+  int nextIndex = 1;
   DateTime selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshEvents();
+  }
+
+  void _refreshEvents() {
+    setState(() {});
+  }
+
+  void _addEvent(Event event) {
+    setState(() {
+      staticEvents.add(event);
+    });
+  }
+
+  void _updateEvent(Event updatedEvent) {
+    setState(() {
+      int index = staticEvents.indexWhere((event) => event.eventId == updatedEvent.eventId);
+      if (index != -1) {
+        staticEvents[index] = updatedEvent;
+      }
+    });
+  }
+
+  void _deleteEvent(Event event) {
+    setState(() {
+      staticEvents.removeWhere((e) => e.eventId == event.eventId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const SideBar(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Calendar',
-        ),
+        title: const Text('Calendar'),
         centerTitle: true,
         scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EventForm(
+                    onSave: (newEvent) {
+                      _addEvent(newEvent);
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
           _buildDateBar(),
           Expanded(
-            child: ListView.builder(
-              itemCount: 24,
-              itemBuilder: (context, index) {
-                return _buildHourRow(index);
-              },
-            ),
+            child: _buildEventList(),
           ),
         ],
       ),
@@ -57,6 +103,7 @@ class _CalendarState extends State<Calendar> {
               setState(() {
                 selectedDate = selectedDate.subtract(Duration(days: 1));
               });
+              _refreshEvents();
             },
           ),
           Text(
@@ -69,6 +116,7 @@ class _CalendarState extends State<Calendar> {
               setState(() {
                 selectedDate = selectedDate.add(Duration(days: 1));
               });
+              _refreshEvents();
             },
           ),
         ],
@@ -76,96 +124,79 @@ class _CalendarState extends State<Calendar> {
     );
   }
 
-  Widget _buildHourRow(int hour) {
-    DateTime currentHour = DateTime(
-      selectedDate.year,
-      selectedDate.month,
-      selectedDate.day,
-      hour,
-    );
-    List<Event> eventsAtThisHour = staticEvents.where((event) {
-      return event.dateStart.year == currentHour.year &&
-          event.dateStart.month == currentHour.month &&
-          event.dateStart.day == currentHour.day &&
-          event.startingTime!.hour <= currentHour.hour &&
-          event.endingTime!.hour >= currentHour.hour;
+  Widget _buildEventList() {
+    List<Event> eventsForSelectedDay = staticEvents.where((event) {
+      return event.dateStart.year == selectedDate.year &&
+          event.dateStart.month == selectedDate.month &&
+          event.dateStart.day == selectedDate.day;
     }).toList();
 
-    return Row(
-      children: [
-        SizedBox(
-          width: 60.0, // Width of the hour column
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${hour.toString().padLeft(2, '0')}:00',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+    // Sort events by starting time
+    eventsForSelectedDay.sort((a, b) =>
+    a.startingTime!.hour.compareTo(b.startingTime!.hour) != 0
+        ? a.startingTime!.hour.compareTo(b.startingTime!.hour)
+        : a.startingTime!.minute.compareTo(b.startingTime!.minute));
+
+    return ListView.builder(
+      itemCount: eventsForSelectedDay.length,
+      itemBuilder: (context, index) {
+        Event event = eventsForSelectedDay[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EventDetails(
+                  event: event.toMap(),
+                  onDelete: () {
+                    _deleteEvent(event);
+                  },
+                  onUpdate: (updatedEvent) {
+                    _updateEvent(updatedEvent);
+                  },
+                ),
               ),
-              SizedBox(height: 4.0),
-              Text(
-                '${(hour + 1).toString().padLeft(2, '0')}:00',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
+            );
+          },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+            padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Colors.grey[300]!),
-              ),
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.blue, width: 2.0),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: eventsAtThisHour.map((event) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            EventDetails(event: event.toMap()),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4.0),
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.blue, width: 2.0),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          event.name,
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          event.description ?? '',
-                          style: TextStyle(
-                            fontSize: 12.0,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
-                    ),
+              children: [
+                Text(
+                  event.name,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                );
-              }).toList(),
+                ),
+                Text(
+                  event.description ?? '',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.white70,
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  '${event.startingTime!.format(context)} - ${event.endingTime!.format(context)}',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
