@@ -74,6 +74,6 @@ public class User implements Serializable {
                 ", \"IsAdmin\":\"" + IsAdmin + "\"" +
                 ", \"timeCreated\":\"" + timeCreated + "\"" +
                 ", \"lastLogin\":\"" + lastLogin + "\"" +
-                ", \"userGender\":\"" + userGender + "\"" + "}";
+                ", \"userGender\":\"" + userGender.ordinal() + "\"" + "}";
     }
 }
