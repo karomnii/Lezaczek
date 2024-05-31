@@ -10,7 +10,7 @@ public class ComplexResponse extends Response {
         super("ok");
         this.responseData = properites;
     }
-    
+
     public String toJsonString(){
         String result = "{" + super.toString() + ",";
         for (Object key : responseData.keySet()) {
@@ -22,7 +22,7 @@ public class ComplexResponse extends Response {
             }
         }
         return result.substring(0, result.length()-1) + "}";
-        
+
     }
     public void append(String key, String value) {
         this.responseData.put(key, value);

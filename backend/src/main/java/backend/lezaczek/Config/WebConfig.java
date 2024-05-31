@@ -21,14 +21,14 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         // comment out this line to disable session checking
-        registry.addInterceptor(sessionHandler).excludePathPatterns("/register", 
-                                                                                "/login",
-                                                                                "/refresh",
-                                                                                "/hello",
-                                                                                "/auth/register",
-                                                                                "/auth/login",
-                                                                                "/auth/refresh",
-                                                                                "/api/v1/auth/refresh");
+        registry.addInterceptor(sessionHandler).excludePathPatterns("/register",
+                "/login",
+                "/refresh",
+                "/hello",
+                "/auth/register",
+                "/auth/login",
+                "/auth/refresh",
+                "/api/v1/auth/refresh");
     }
 
     @Override
