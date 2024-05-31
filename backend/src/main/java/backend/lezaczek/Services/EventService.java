@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import backend.lezaczek.Helpers.JwtTokenHelper;
 import backend.lezaczek.Model.Event;
+import backend.lezaczek.Model.User;
 import backend.lezaczek.Repositories.EventsRepository;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -21,6 +22,9 @@ public class EventService {
     @Autowired
     private EventsRepository eventsRepository;
 
+    @Autowired
+    private User currentUser;
+
     public List<Event> getAllEvents() {
         return eventsRepository.findAll();
     }
@@ -31,7 +35,8 @@ public class EventService {
 
     public List<Event> getEventsByDate(Date selectedDate, HttpServletRequest request) {
         try {
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            // Long userId = 1L; // hardcoded for testing
+            Long userId = currentUser.getUserId();
             return eventsRepository.findByDateUserId(selectedDate, userId.intValue());
         } catch (Throwable e) {
             throw new RuntimeException("Authorization token invalid");
@@ -66,7 +71,8 @@ public class EventService {
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             try {
-                Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+                // Long userId = 1L; // hardcoded for testing
+                Long userId = currentUser.getUserId();
                 if (event.getUserID() == userId) {
                     eventsRepository.deleteById(id);
                 } else {
@@ -82,7 +88,8 @@ public class EventService {
 
     public boolean eventMatchesUser(Event event, HttpServletRequest request){
         try {
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            // Long userId = 1L; // hardcoded for testing
+            Long userId = currentUser.getUserId();
             if (event.getUserID() != userId) return false;
         } catch (Throwable e) {
             return false;
@@ -95,7 +102,8 @@ public class EventService {
         if (eventOpt.isEmpty()) return false;
         Event event = eventOpt.get();
         try {
-            Long userId = Long.parseLong(jwtTokenHelper.extractUserId(request));
+            // Long userId = 1L; // hardcoded for testing
+            Long userId = currentUser.getUserId();
             if (event.getUserID() != userId) return false;
         } catch (Throwable e) {
             return false;

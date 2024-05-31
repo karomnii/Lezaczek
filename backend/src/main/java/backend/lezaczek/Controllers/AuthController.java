@@ -1,6 +1,7 @@
 package backend.lezaczek.Controllers;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,8 +62,8 @@ public class AuthController {
         if (!isSuccessfulLogin) {
             return ResponseEntity.ok(new ErrorResponse("Invalid password or user not found"));
         }
-        String accessToken = jwtTokenHelper.generateToken(String.valueOf(user.getUserId()), ACCESS_TOKEN_EXPIRATION);
-        String refreshToken = jwtTokenHelper.generateToken(String.valueOf(user.getUserId()), REFRESH_TOKEN_EXPIRATION);
+        String accessToken = jwtTokenHelper.generateToken(user.getUserId(), ACCESS_TOKEN_EXPIRATION);
+        String refreshToken = jwtTokenHelper.generateToken(user.getUserId(), REFRESH_TOKEN_EXPIRATION);
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         accessTokenCookie.setHttpOnly(true);
@@ -75,18 +76,22 @@ public class AuthController {
         refreshTokenCookie.setMaxAge((int) REFRESH_TOKEN_EXPIRATION / 1000);
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
-        AuthResponse authResponse = new AuthResponse(accessToken, refreshToken);
+        AuthResponse authResponse = new AuthResponse(accessToken, refreshToken, user);
         return ResponseEntity.ok(authResponse.toJsonString());
     }
     @GetMapping(value = "/refresh", produces = {"application/json"})
     public ResponseEntity<?> refresh(Request<String, String> requestBody, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if(!sessionHandler.checkSession(request, response)){
+        String token = sessionHandler.getToken(request, "refreshToken");
+        if(!sessionHandler.isValidToken(token, response)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new ErrorResponse("Invalid authorization token").toJsonString());
         }
-        String userId;
+        Long userId = jwtTokenHelper.extractUserId(token);
+        Optional<User> user = userService.findById(userId);
+        if(user.isEmpty()){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("No user matches given token").toJsonString());
+        }
         try {
-            userId = jwtTokenHelper.extractClaims(request).toString();
-            String accessToken = jwtTokenHelper.generateToken(String.valueOf(userId), ACCESS_TOKEN_EXPIRATION);
+            String accessToken = jwtTokenHelper.generateToken(userId, ACCESS_TOKEN_EXPIRATION);
             Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
             accessTokenCookie.setHttpOnly(true);
             accessTokenCookie.setSecure(true);
