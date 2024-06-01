@@ -39,7 +39,7 @@ public class News {
         this.startingTime = startingTime;
         this.endingTime = endingTime;
     }
-
+  
     public News(String name, String description, String place,
                 LocalDate dateOfEvent, LocalTime startingTime,
                 LocalTime endingTime) {

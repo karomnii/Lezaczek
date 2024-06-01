@@ -64,6 +64,7 @@ public class SessionHandler implements HandlerInterceptor {
         if (token.length() > 0){
             return isValidToken(token, response);
         }
+
         return false;
     }
     public boolean isValidToken(String token, HttpServletResponse response) throws IOException{
