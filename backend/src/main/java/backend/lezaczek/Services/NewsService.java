@@ -23,7 +23,7 @@ public class NewsService {
     private final NewsRepository newsRepository;
 
     @Autowired
-    private UsersRepository userRepository;
+    private UsersRepository usersRepository;
 
     @Autowired
     JwtTokenHelper jwtTokenHelper;
@@ -70,7 +70,7 @@ public class NewsService {
         catch (Throwable e){
             throw new RuntimeException("Authorization token is invalid");
         }
-        User user = userRepository.findUserByUserId(userId);
+        User user = usersRepository.findUserByUserId(userId);
         if(user.getIsAdmin() == 0){
             throw new RuntimeException("You don't have permission to this resource");
         }
@@ -91,7 +91,7 @@ public class NewsService {
             catch (Throwable e){
                 throw new RuntimeException("Authorization token is invalid");
             }
-            User user = userRepository.findUserByUserId(userId);
+            User user = usersRepository.findUserByUserId(userId);
             if(user.getIsAdmin() == 1){
                 newsRepository.deleteById(newsId);
             }
@@ -117,7 +117,7 @@ public class NewsService {
         catch (Throwable e){
             throw new RuntimeException("Authorization token is invalid");
         }
-        User user = userRepository.findUserByUserId(userId);
+        User user = usersRepository.findUserByUserId(userId);
         if(user.getIsAdmin() == 0){
             throw new RuntimeException("You don't have permission to this resource");
         }
