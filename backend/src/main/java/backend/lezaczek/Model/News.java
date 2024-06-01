@@ -14,8 +14,8 @@ import java.time.LocalTime;
 @Setter
 @ToString
 public class News {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int newsId;
-    private int userId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long newsId;
+    private Long userId;
     private String name;
     private String description;
     private String place;
@@ -26,7 +26,7 @@ public class News {
 
     public News() {}
 
-    public News(int newsId, int userId, String name, String description,
+    public News(Long newsId, Long userId, String name, String description,
                 String place, LocalDateTime dateAdded, LocalDate dateOfEvent,
                 LocalTime startingTime, LocalTime endingTime) {
         this.newsId = newsId;
@@ -40,10 +40,9 @@ public class News {
         this.endingTime = endingTime;
     }
 
-    public News(int userId, String name, String description, String place,
+    public News(String name, String description, String place,
                 LocalDate dateOfEvent, LocalTime startingTime,
                 LocalTime endingTime) {
-        this.userId = userId;
         this.name = name;
         this.description = description;
         this.place = place;
