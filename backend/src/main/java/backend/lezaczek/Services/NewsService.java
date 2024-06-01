@@ -22,7 +22,6 @@ import java.util.Optional;
 public class NewsService {
     private final NewsRepository newsRepository;
 
-    @Autowired
     private UsersRepository usersRepository;
 
     @Autowired
@@ -30,6 +29,7 @@ public class NewsService {
     @Autowired
     public NewsService(NewsRepository newsRepository, UsersRepository usersRepository) {
         this.newsRepository = newsRepository;
+        this.usersRepository = usersRepository;
     }
 
     public List<News> getNews(HttpServletRequest request) {
