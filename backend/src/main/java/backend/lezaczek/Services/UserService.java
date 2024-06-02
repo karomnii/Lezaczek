@@ -29,5 +29,8 @@ public class UserService {
     public Optional<User> findById(Long id){
         return usersRepository.findById(id);
     }
+    public void deleteUser(Long id) throws IllegalArgumentException{
+        usersRepository.deleteById(id);
+    }
    
 }

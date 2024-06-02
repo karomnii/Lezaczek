@@ -25,11 +25,11 @@ public class SessionHandler implements HandlerInterceptor {
     JwtTokenHelper jwtTokenHelper;
     @Autowired
     UserService userService;
-    @Autowired private User currentUser;
+    @Autowired
+    private User currentUser;
     
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
-        System.out.println("In preHandle");
         String token = getToken(request, "accessToken");
         if (!(token.length() > 0)){
             response.setStatus(HttpStatus.UNAUTHORIZED.value());

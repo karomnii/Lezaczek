@@ -106,18 +106,18 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("application/json");
         try {
+            for (Field field : registerRequest.getClass().getDeclaredFields()){
+                field.setAccessible(true);
+                if (field.get(registerRequest) == null || field.get(registerRequest).toString().isEmpty()){
+                    return ResponseEntity.badRequest().body(new ErrorResponse("Missing required parameter: " + field.getName()));
+                }
+            }
             if(userService.findByEmail(registerRequest.getEmail()) != null) {
                 return ResponseEntity.ok(new ErrorResponse("User with this email already exists"));
             };
         }
         catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-        for (Field field : registerRequest.getClass().getDeclaredFields()){
-            field.setAccessible(true);
-            if (field.get(registerRequest) == null){
-                return ResponseEntity.badRequest().body(new ErrorResponse("Missing required parameter"));
-            }
+            return ResponseEntity.internalServerError().body(new ErrorResponse("Something went wrong"));
         }
         User user = new User(registerRequest);
         userService.saveUser(user);
