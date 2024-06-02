@@ -118,7 +118,6 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const SideBar(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Planner'),
