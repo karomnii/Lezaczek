@@ -37,6 +37,13 @@ test-build: .env
 run-test-build: test-build
 	mvn exec:java
 
+test-build-windows:
+	mvn clean
+	mvn compile -P test
+
+run-test-build-windows: test-build-windows
+	mvn exec:java
+
 package-build: build
 	mvn package -P production
 

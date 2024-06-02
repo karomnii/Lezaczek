@@ -2,21 +2,21 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-
 class HttpHelper {
   static final JsonDecoder _decoder = new JsonDecoder();
   static final JsonEncoder _encoder = new JsonEncoder();
 
   static Map<String, String> headers = {"content-type": "application/json"};
   static Map<String, String> cookies = {};
-  static void updateCookieFromHeaders(){
+
+  static void updateCookieFromHeaders() {
     headers['cookie'] = _generateCookieHeader();
   }
+
   static void _updateCookie(http.Response response) {
     String? allSetCookie = response.headers['set-cookie'];
 
     if (allSetCookie != null) {
-
       var setCookies = allSetCookie.split(',');
 
       for (var setCookie in setCookies) {
@@ -47,10 +47,9 @@ class HttpHelper {
       }
     }
   }
+
   static void _unsetCookie(String cookie) {
-
-      cookies.remove(cookie);
-
+    cookies.remove(cookie);
   }
 
   static String _generateCookieHeader() {
@@ -75,24 +74,32 @@ class HttpHelper {
   }
 
   static Future<http.Response> post(String url, {body, encoding}) {
-
     final Uri uri = Uri.parse(url);
     return http
-        .post(uri, body: _encoder.convert(body), headers: headers, encoding: encoding)
+        .post(uri,
+            body: _encoder.convert(body), headers: headers, encoding: encoding)
         .then((http.Response response) {
-
       _updateCookie(response);
       return response;
     });
   }
+
   static Future<http.Response> put(String url, {body, encoding}) {
     final Uri uri = Uri.parse(url);
     return http
-        .put(
-        uri, body: _encoder.convert(body), headers: headers, encoding: encoding)
+        .put(uri,
+            body: _encoder.convert(body), headers: headers, encoding: encoding)
         .then((http.Response response) {
       _updateCookie(response);
 
+      return response;
+    });
+  }
+
+  static Future<http.Response> delete(String url) {
+    final Uri uri = Uri.parse(url);
+    return http.delete(uri, headers: headers).then((http.Response response) {
+      _updateCookie(response);
       return response;
     });
   }

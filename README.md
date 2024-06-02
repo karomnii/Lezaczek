@@ -13,16 +13,22 @@ In order to run frontend, you need to have installed Android Studio
     - Enable Dart support for the following modules: Project 'frontend'
     - Click apply & ok
 7. Warning about pub get dependencies will pop up - click *get dependencies* (alternatively: open terminal and enter *dart pub get*). If there's still problem, try with *upgrade dependencies* (or *dart pub upgrade*)
-### How to run this project on Android Emulator?
+### How to run this project on Android Emulator?(After turning the backend on)
 In case you haven't created any emulators:
 1. Open **Tools** -> **Device Manager** and click **Add a new device...**
 2. Enter your configuration including device model, amount of RAM memory etc.
 3. Close the wizard
+Enable port forwarding for connection of the emulated device with the backend:
+1. In the emulator open chrome browser, type in the localhost:8080/api/v1/hello. Until you can see the greetings message it is not set up.
+2. Open Chrome or other chromium based browser on your computer. Type in the "//inspect/:devices#devices"
+3. Open the "Configure..." button on the site next to "discover network targets" which should be checked.
+4. Add "localhost:5554" and "localhost:5555" to the list and enable port forwarding at the bottom of the box.
+5. Try to refresh the page on the emulator, if you don't see the greetings message there is something wrong
 If your emulator is already set up:
 1. Run the device. It will be automatically selected as the device that can run 'main.dart' configuration
 2. Run 'main.dart' configuration. After a while, the application will start.
 **Important:** if you're experiencing troubles with starting virtual device, edit its configuration by switching **Emulated Performance** -> **Graphics** to *Software*. If it didn't make any difference, switch to *Hardware*
-### How to run this project using Chrome or Edge browser?
+### How to run this project using Chrome or Edge browser? No avalible instructions for conncetion with backend yet
 1. Click *no device selected*
 2. Choose Chrome (web) or Edge (web) from the list
 3. Run 'main.dart' configuration. After a while, the application will start.
@@ -46,7 +52,7 @@ To connect backend to the database, export these Environment variables with corr
 
 Alternatively you can edit **application.test.test.properties** file in *backend/src/main/resources*
 
-If these are correctly set you should be able to run **make run-test-build** in *backend* folder
+If these are correctly set you should be able to run **make run-test-build-windows** in *backend* folder
 
 ## API Description
 
@@ -54,15 +60,35 @@ If these are correctly set you should be able to run **make run-test-build** in 
     Used to verify if http server is running. Returns "Greetings from Spring Boot!"
 
     POST /api/v1/auth/login
-    Accepts JSON in format {email:String, password:String}.
+    Used to login the user. Accepts JSON in format {email:String, password:String}.
     Returns {response:"ok", refreshToken:String, accessToken:String} or {response:"error", errorReason:String}
     Sends Cookies accessToken (httpOnly, Secure, path:"/") and refreshToken (httpOnly, Secure, path:"/api/v1/auth/refresh")
 
     PUT /api/v1/auth/register
-    Accepts JSON in format {email:String, name:String, surname: String, password: String, gender: [0-2]}.
+    Used to register the user. Accepts JSON in format {email:String, name:String, surname: String, password: String, gender: [0-2]}.
     Returns {response: "ok"} or {response: "error", errorReason:String}
 
     POST /api/v1/auth/refresh
-    Accepts Cookie authToken or Cookie refreshToken.
+    Used to refresh the users authToken. Accepts Cookie authToken or Cookie refreshToken.
     Returns new accessToken cookie and JSON {response:"ok",accessToken:String} or {response:"error", errorReason:String}, without the cookie
+
+    GET /api/v1/events/{id}
+    Used to get event data (by the user that created it). Accepts Cookie authToken or Cookie refreshToken.
+
+    GET /api/v1/events/date/{YYYY-MM-DD}
+    Used to get all events on a selected date (by the user that created them). Accepts Cookie authToken or Cookie refreshToken.
+
+    PUT /api/v1/events/
+    Used for adding events. Accepts Cookie authToken or Cookie refreshToken. Accepts JSON in format {"eventId": int, "userID": int, "name": String,"description": String,
+    "place": String,"eventType": String,"dateStart": Date(YYYY-MM-DD),"dateEnd": Date(YYYY-MM-DD),"startingTime": Time(HH:MM:SS),"endingTime": Time(HH:MM:SS)}
+    Returns {response: "ok"} or {response: "error", errorReason:String}
+
+    POST /api/v1/events/
+    Used for updating events. Accepts Cookie authToken or Cookie refreshToken. Accepts JSON in format {"eventId": int, "userID": int, "name": String,"description": String,
+    "place": String,"eventType": String,"dateStart": Date(YYYY-MM-DD),"dateEnd": Date(YYYY-MM-DD),"startingTime": Time(HH:MM:SS),"endingTime": Time(HH:MM:SS)}
+    Returns {response: "ok"} or {response: "error", errorReason:String}
+
+    DELETE /api/v1/events/{id}
+    Used to delete event (by the user that created it). Accepts Cookie authToken or Cookie refreshToken.
+    Returns {response: "ok"} or {response: "error", errorReason:String}
 

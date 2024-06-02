@@ -1,51 +1,85 @@
-// lib/models/event.dart
-
 import 'package:flutter/material.dart';
 
+enum EventType { SINGLE, DAILY, WEEKLY }
+
 class Event {
-  final int eventId;
-  final int userId;
-  final String name;
-  final String? description;
-  final String? place;
-  final int eventType;
-  final DateTime dateAdded;
-  final DateTime dateStart;
-  final DateTime dateEnd;
-  final TimeOfDay? startingTime;
-  final TimeOfDay? endingTime;
+  int eventId;
+  int userID;
+  String name;
+  String? description;
+  String? place;
+  EventType eventType;
+  DateTime dateStart;
+  DateTime dateEnd;
+  TimeOfDay startingTime;
+  TimeOfDay endingTime;
 
   Event({
     required this.eventId,
-    required this.userId,
+    required this.userID,
     required this.name,
     this.description,
     this.place,
     required this.eventType,
-    required this.dateAdded,
     required this.dateStart,
     required this.dateEnd,
-    this.startingTime,
-    this.endingTime,
+    required this.startingTime,
+    required this.endingTime,
   });
+
+  factory Event.fromJson(Map<String, dynamic> json) {
+    return Event(
+      eventId: json['eventId'],
+      userID: json['userID'],
+      name: json['name'],
+      description: json['description'],
+      place: json['place'],
+      eventType: EventType.values.firstWhere((e) => e.toString() == 'EventType.' + json['eventType']),
+      dateStart: _parseDateTime(json['dateStart']),
+      dateEnd: _parseDateTime(json['dateEnd']),
+      startingTime: _parseTimeOfDay(json['startingTime']),
+      endingTime: _parseTimeOfDay(json['endingTime']),
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
       'eventId': eventId,
-      'userId': userId,
+      'userID': userID,
       'name': name,
       'description': description,
       'place': place,
-      'eventType': eventType,
-      'dateAdded': dateAdded.toIso8601String(),
-      'dateStart': dateStart.toIso8601String(),
-      'dateEnd': dateEnd.toIso8601String(),
-      'startingTime': startingTime != null
-          ? '${startingTime!.hour.toString().padLeft(2, '0')}:${startingTime!.minute.toString().padLeft(2, '0')}'
-          : null,
-      'endingTime': endingTime != null
-          ? '${endingTime!.hour.toString().padLeft(2, '0')}:${endingTime!.minute.toString().padLeft(2, '0')}'
-          : null,
+      'eventType': eventType.toString().split('.').last,
+      'dateStart': _formatDateTime(dateStart),
+      'dateEnd': _formatDateTime(dateEnd),
+      'startingTime': _formatTimeOfDay(startingTime),
+      'endingTime': _formatTimeOfDay(endingTime),
     };
   }
+
+  static TimeOfDay _parseTimeOfDay(String time) {
+    final parts = time.split(':');
+    return TimeOfDay(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1])
+    );
+  }
+
+  static String _formatTimeOfDay(TimeOfDay time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:00';
+  }
+
+  static String _formatDateTime(DateTime date)
+  {
+    String stringDate ="";
+    stringDate = "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}" ;
+    return stringDate;
+  }
+
+  static DateTime _parseDateTime(String date)
+  {
+    final parts = DateTime.parse(date);
+    return DateTime(parts.year, parts.month, parts.day);
+  }
 }
+
