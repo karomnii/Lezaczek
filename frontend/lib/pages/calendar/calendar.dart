@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/models/event.dart';
 import 'package:frontend/data/static_data.dart';
-import '../../side_bar.dart';
 import 'package:frontend/pages/calendar/event_details.dart';
 import 'package:frontend/pages/calendar/event_form.dart';
 
@@ -54,7 +53,6 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const SideBar(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Calendar'),
