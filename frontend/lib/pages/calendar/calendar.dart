@@ -15,8 +15,6 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-
-  int nextIndex = 1;
   DateTime selectedDate = DateTime.now();
   late Future<List<Event>> futureEvents;
   String? errorMessage;
@@ -91,28 +89,60 @@ class _CalendarState extends State<Calendar> {
   }
 
   void _refreshEvents() {
-    setState(() {});
-  }
-
-  void _addEvent(Event event) {
     setState(() {
-      staticEvents.add(event);
+      futureEvents = EventService.getEventsByDate(DateFormat('yyyy-MM-dd').format(selectedDate));
     });
   }
 
-  void _updateEvent(Event updatedEvent) {
-    setState(() {
-      int index = staticEvents.indexWhere((event) => event.eventId == updatedEvent.eventId);
-      if (index != -1) {
-        staticEvents[index] = updatedEvent;
-      }
-    });
+  void _addEvent(Event event) async {
+    try {
+      Event createdEvent = await EventApi().createEvent(event);
+      setState(() {
+        futureEvents = futureEvents.then((events) {
+          events.add(createdEvent);
+          return events;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
+      });
+    }
   }
 
-  void _deleteEvent(Event event) {
-    setState(() {
-      staticEvents.removeWhere((e) => e.eventId == event.eventId);
-    });
+  void _updateEvent(Event updatedEvent) async {
+    try {
+      Event updatedEventFromApi = await EventApi().updateEvent(updatedEvent);
+      setState(() {
+        futureEvents = futureEvents.then((events) {
+          int index = events.indexWhere((event) => event.eventId == updatedEventFromApi.eventId);
+          if (index != -1) {
+            events[index] = updatedEventFromApi;
+          }
+          return events;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
+      });
+    }
+  }
+
+  void _deleteEvent(Event event) async {
+    try {
+      await EventApi().deleteEvent(event.eventId);
+      setState(() {
+        futureEvents = futureEvents.then((events) {
+          events.removeWhere((e) => e.eventId == event.eventId);
+          return events;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
+      });
+    }
   }
 
   @override

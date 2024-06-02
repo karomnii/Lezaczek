@@ -1,5 +1,3 @@
-// lib/pages/calendar/event_details.dart
-
 import 'package:flutter/material.dart';
 import 'package:frontend/models/event.dart';
 import 'package:intl/intl.dart';
