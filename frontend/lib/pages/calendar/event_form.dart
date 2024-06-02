@@ -1,5 +1,3 @@
-// lib/pages/calendar/event_form.dart
-
 import 'package:flutter/material.dart';
 import 'package:frontend/models/event.dart';
 import 'package:intl/intl.dart';
@@ -60,113 +58,193 @@ class _EventFormState extends State<EventForm> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                initialValue: _name,
-                decoration: InputDecoration(labelText: 'Event Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a name';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _name = value!;
-                },
+        child: Card(
+          elevation: 4.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                children: [
+                  _buildTextField(
+                    label: 'Event Name',
+                    initialValue: _name,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a name';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _name = value!;
+                    },
+                  ),
+                  _buildTextField(
+                    label: 'Description',
+                    initialValue: _description,
+                    maxLines: 5,  // To make the description box larger
+                    onSaved: (value) {
+                      _description = value;
+                    },
+                  ),
+                  _buildTextField(
+                    label: 'Place',
+                    initialValue: _place,
+                    onSaved: (value) {
+                      _place = value;
+                    },
+                  ),
+                  _buildDropdownField(
+                    label: 'Event Type',
+                    value: _eventType,
+                    onChanged: (value) {
+                      setState(() {
+                        _eventType = value!;
+                      });
+                    },
+                    items: EventType.values.map((type) {
+                      return DropdownMenuItem<EventType>(
+                        value: type,
+                        child: Text(type.toString().split('.').last),
+                      );
+                    }).toList(),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DatePickerFormField(
+                          initialValue: _dateStart,
+                          label: 'Start Date',
+                          onDateSelected: (date) {
+                            setState(() {
+                              _dateStart = date;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: DatePickerFormField(
+                          initialValue: _dateEnd,
+                          label: 'End Date',
+                          onDateSelected: (date) {
+                            setState(() {
+                              _dateEnd = date;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TimePickerFormField(
+                          initialValue: _startingTime,
+                          label: 'Starting Time',
+                          onTimeSelected: (time) {
+                            setState(() {
+                              _startingTime = time;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: TimePickerFormField(
+                          initialValue: _endingTime,
+                          label: 'Ending Time',
+                          onTimeSelected: (time) {
+                            setState(() {
+                              _endingTime = time;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        Event newEvent = Event(
+                          eventId: widget.initialEvent?.eventId ?? 0,
+                          userID: _userID,
+                          name: _name,
+                          description: _description,
+                          place: _place,
+                          eventType: _eventType,
+                          dateStart: _dateStart,
+                          dateEnd: _dateEnd,
+                          startingTime: _startingTime,
+                          endingTime: _endingTime,
+                        );
+                        widget.onSave(newEvent);
+                        Navigator.pop(context, "Event ${widget.initialEvent == null ? 'added' : 'updated'} successfully");
+                      }
+                    },
+                    child: Text(widget.initialEvent == null ? 'Add' : 'Update'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 15.0),
+                      textStyle: TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ],
               ),
-              TextFormField(
-                initialValue: _description,
-                decoration: InputDecoration(labelText: 'Description'),
-                onSaved: (value) {
-                  _description = value;
-                },
-              ),
-              TextFormField(
-                initialValue: _place,
-                decoration: InputDecoration(labelText: 'Place'),
-                onSaved: (value) {
-                  _place = value;
-                },
-              ),
-              DropdownButtonFormField<EventType>(
-                value: _eventType,
-                decoration: InputDecoration(labelText: 'Event Type'),
-                items: EventType.values.map((type) {
-                  return DropdownMenuItem<EventType>(
-                    value: type,
-                    child: Text(type.toString().split('.').last),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _eventType = value!;
-                  });
-                },
-              ),
-              DatePickerFormField(
-                initialValue: _dateStart,
-                label: 'Start Date',
-                onDateSelected: (date) {
-                  setState(() {
-                    _dateStart = date;
-                  });
-                },
-              ),
-              DatePickerFormField(
-                initialValue: _dateEnd,
-                label: 'End Date',
-                onDateSelected: (date) {
-                  setState(() {
-                    _dateEnd = date;
-                  });
-                },
-              ),
-              TimePickerFormField(
-                initialValue: _startingTime,
-                label: 'Starting Time',
-                onTimeSelected: (time) {
-                  setState(() {
-                    _startingTime = time;
-                  });
-                },
-              ),
-              TimePickerFormField(
-                initialValue: _endingTime,
-                label: 'Ending Time',
-                onTimeSelected: (time) {
-                  setState(() {
-                    _endingTime = time;
-                  });
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    Event newEvent = Event(
-                      eventId: widget.initialEvent?.eventId ?? 0,
-                      userID: _userID,
-                      name: _name,
-                      description: _description,
-                      place: _place,
-                      eventType: _eventType,
-                      dateStart: _dateStart,
-                      dateEnd: _dateEnd,
-                      startingTime: _startingTime,
-                      endingTime: _endingTime,
-                    );
-                    widget.onSave(newEvent);
-                  }
-                },
-                child: Text(widget.initialEvent == null ? 'Add' : 'Update'),
-              ),
-            ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required String? initialValue,
+    required FormFieldSetter<String> onSaved,
+    FormFieldValidator<String>? validator,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        initialValue: initialValue,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        validator: validator,
+        onSaved: onSaved,
+        maxLines: maxLines,
+      ),
+    );
+  }
+
+  Widget _buildDropdownField<T>({
+    required String label,
+    required T value,
+    required ValueChanged<T?> onChanged,
+    required List<DropdownMenuItem<T>> items,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<T>(
+        value: value,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        onChanged: onChanged,
+        items: items,
       ),
     );
   }
@@ -194,7 +272,12 @@ class DatePickerFormField extends StatelessWidget {
         }
       },
       child: InputDecorator(
-        decoration: InputDecoration(labelText: label),
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
         child: Text(DateFormat('yyyy-MM-dd').format(initialValue)),
       ),
     );
@@ -221,7 +304,12 @@ class TimePickerFormField extends StatelessWidget {
         }
       },
       child: InputDecorator(
-        decoration: InputDecoration(labelText: label),
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
         child: Text(initialValue.format(context)),
       ),
     );

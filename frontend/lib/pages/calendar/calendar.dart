@@ -27,7 +27,8 @@ class _CalendarState extends State<Calendar> {
 
   void _refreshEvents() {
     setState(() {
-      futureEvents = EventService.getEventsByDate(DateFormat('yyyy-MM-dd').format(selectedDate));
+      futureEvents = EventService.getEventsByDate(
+          DateFormat('yyyy-MM-dd').format(selectedDate));
     });
   }
 
@@ -52,7 +53,8 @@ class _CalendarState extends State<Calendar> {
       Event updatedEventFromApi = await EventApi().updateEvent(updatedEvent);
       setState(() {
         futureEvents = futureEvents.then((events) {
-          int index = events.indexWhere((event) => event.eventId == updatedEventFromApi.eventId);
+          int index = events.indexWhere((event) =>
+          event.eventId == updatedEventFromApi.eventId);
           if (index != -1) {
             events[index] = updatedEventFromApi;
           }
@@ -157,17 +159,25 @@ class _CalendarState extends State<Calendar> {
         actions: [
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EventForm(
-                    onSave: (newEvent) {
-                      _addEvent(newEvent);
-                    },
-                  ),
+                  builder: (context) =>
+                      EventForm(
+                        onSave: (newEvent) {
+                          _addEvent(newEvent);
+                        },
+                      ),
                 ),
               );
+              if (result != null && result is String) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result),
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -200,7 +210,8 @@ class _CalendarState extends State<Calendar> {
                   return Center(child: Text('No events found'));
                 } else {
                   List<Event> eventsForSelectedDay = snapshot.data!;
-                  eventsForSelectedDay.sort((a, b) => a.startingTime.hour.compareTo(b.startingTime.hour) != 0
+                  eventsForSelectedDay.sort((a, b) =>
+                  a.startingTime.hour.compareTo(b.startingTime.hour) != 0
                       ? a.startingTime.hour.compareTo(b.startingTime.hour)
                       : a.startingTime.minute.compareTo(b.startingTime.minute));
                   return ListView.builder(
@@ -208,24 +219,33 @@ class _CalendarState extends State<Calendar> {
                     itemBuilder: (context, index) {
                       Event event = eventsForSelectedDay[index];
                       return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EventDetails(
-                                event: event.toMap(),
-                                onDelete: () {
-                                  _deleteEvent(event);
-                                },
-                                onUpdate: (updatedEvent) {
-                                  _updateEvent(updatedEvent);
-                                },
-                              ),
+                              builder: (context) =>
+                                  EventDetails(
+                                    event: event.toMap(),
+                                    onDelete: () {
+                                      _deleteEvent(event);
+                                    },
+                                    onUpdate: (updatedEvent) {
+                                      _updateEvent(updatedEvent);
+                                    },
+                                  ),
                             ),
                           );
+                          if (result != null && result is String) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(result),
+                              ),
+                            );
+                          }
                         },
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 8.0),
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                             color: Colors.blue,
@@ -252,7 +272,8 @@ class _CalendarState extends State<Calendar> {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                '${event.startingTime.format(context)} - ${event.endingTime.format(context)}',
+                                '${event.startingTime.format(context)} - ${event
+                                    .endingTime.format(context)}',
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   color: Colors.white,
