@@ -36,7 +36,7 @@ public class EventService {
     public List<Event> getEventsByDate(Date selectedDate, HttpServletRequest request) {
         try {
             // Long userId = 1L; // hardcoded for testing
-            Long userId = currentUser.getUserId();
+            Long userId = currentUser.getCurrentUser().getUserId();
             return eventsRepository.findByDateUserId(selectedDate, userId.intValue());
         } catch (Throwable e) {
             throw new RuntimeException("Authorization token invalid");
@@ -73,7 +73,7 @@ public class EventService {
             Event event = eventOptional.get();
             try {
                 // Long userId = 1L; // hardcoded for testing
-                Long userId = currentUser.getUserId();
+                Long userId = currentUser.getCurrentUser().getUserId();
                 if (event.getUserID() == userId) {
                     eventsRepository.deleteById(id);
                 } else {
@@ -90,7 +90,7 @@ public class EventService {
     public boolean eventMatchesUser(Event event, HttpServletRequest request){
         try {
             // Long userId = 1L; // hardcoded for testing
-            Long userId = currentUser.getUserId();
+            Long userId = currentUser.getCurrentUser().getUserId();
             if (event.getUserID() != userId) return false;
         } catch (Throwable e) {
             return false;
@@ -104,7 +104,7 @@ public class EventService {
         Event event = eventOpt.get();
         try {
             // Long userId = 1L; // hardcoded for testing
-            Long userId = currentUser.getUserId();
+            Long userId = currentUser.getCurrentUser().getUserId();
             if (event.getUserID() != userId) return false;
         } catch (Throwable e) {
             return false;

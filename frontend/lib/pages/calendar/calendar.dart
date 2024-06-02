@@ -1,9 +1,9 @@
-// lib/pages/calendar/calendar.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/models/event.dart';
-import 'package:frontend/data/static_data.dart';
+import 'package:frontend/models/error.dart';
+import 'package:frontend/api/event_api.dart';
+import 'package:frontend/services/event_service.dart';
 import 'package:frontend/pages/calendar/event_details.dart';
 import 'package:frontend/pages/calendar/event_form.dart';
 
@@ -15,9 +15,9 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-
-  int nextIndex = 1;
   DateTime selectedDate = DateTime.now();
+  late Future<List<Event>> futureEvents;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -26,28 +26,60 @@ class _CalendarState extends State<Calendar> {
   }
 
   void _refreshEvents() {
-    setState(() {});
-  }
-
-  void _addEvent(Event event) {
     setState(() {
-      staticEvents.add(event);
+      futureEvents = EventService.getEventsByDate(DateFormat('yyyy-MM-dd').format(selectedDate));
     });
   }
 
-  void _updateEvent(Event updatedEvent) {
-    setState(() {
-      int index = staticEvents.indexWhere((event) => event.eventId == updatedEvent.eventId);
-      if (index != -1) {
-        staticEvents[index] = updatedEvent;
-      }
-    });
+  void _addEvent(Event event) async {
+    try {
+      Event createdEvent = await EventApi().createEvent(event);
+      setState(() {
+        futureEvents = futureEvents.then((events) {
+          events.add(createdEvent);
+          return events;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
+      });
+    }
   }
 
-  void _deleteEvent(Event event) {
-    setState(() {
-      staticEvents.removeWhere((e) => e.eventId == event.eventId);
-    });
+  void _updateEvent(Event updatedEvent) async {
+    try {
+      Event updatedEventFromApi = await EventApi().updateEvent(updatedEvent);
+      setState(() {
+        futureEvents = futureEvents.then((events) {
+          int index = events.indexWhere((event) => event.eventId == updatedEventFromApi.eventId);
+          if (index != -1) {
+            events[index] = updatedEventFromApi;
+          }
+          return events;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
+      });
+    }
+  }
+
+  void _deleteEvent(Event event) async {
+    try {
+      await EventApi().deleteEvent(event.eventId);
+      setState(() {
+        futureEvents = futureEvents.then((events) {
+          events.removeWhere((e) => e.eventId == event.eventId);
+          return events;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
+      });
+    }
   }
 
   @override
@@ -55,7 +87,7 @@ class _CalendarState extends State<Calendar> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Calendar'),
+        title: const Text('Planner'),
         centerTitle: true,
         scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
@@ -80,8 +112,98 @@ class _CalendarState extends State<Calendar> {
       body: Column(
         children: [
           _buildDateBar(),
+          if (errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                errorMessage!,
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
           Expanded(
-            child: _buildEventList(),
+            child: FutureBuilder<List<Event>>(
+              future: futureEvents,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  if (snapshot.error is Error) {
+                    errorMessage = (snapshot.error as Error).text;
+                  } else {
+                    errorMessage = 'Unexpected error occurred';
+                  }
+                  return Center(child: Text(errorMessage!));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No events found'));
+                } else {
+                  List<Event> eventsForSelectedDay = snapshot.data!;
+                  eventsForSelectedDay.sort((a, b) => a.startingTime.hour.compareTo(b.startingTime.hour) != 0
+                      ? a.startingTime.hour.compareTo(b.startingTime.hour)
+                      : a.startingTime.minute.compareTo(b.startingTime.minute));
+                  return ListView.builder(
+                    itemCount: eventsForSelectedDay.length,
+                    itemBuilder: (context, index) {
+                      Event event = eventsForSelectedDay[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EventDetails(
+                                event: event.toMap(),
+                                onDelete: () {
+                                  _deleteEvent(event);
+                                },
+                                onUpdate: (updatedEvent) {
+                                  _updateEvent(updatedEvent);
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Colors.blue, width: 2.0),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                event.name,
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                event.description ?? '',
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                              SizedBox(height: 8.0),
+                              Text(
+                                '${event.startingTime.format(context)} - ${event.endingTime.format(context)}',
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -119,82 +241,6 @@ class _CalendarState extends State<Calendar> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildEventList() {
-    List<Event> eventsForSelectedDay = staticEvents.where((event) {
-      return event.dateStart.year == selectedDate.year &&
-          event.dateStart.month == selectedDate.month &&
-          event.dateStart.day == selectedDate.day;
-    }).toList();
-
-    // Sort events by starting time
-    eventsForSelectedDay.sort((a, b) =>
-    a.startingTime!.hour.compareTo(b.startingTime!.hour) != 0
-        ? a.startingTime!.hour.compareTo(b.startingTime!.hour)
-        : a.startingTime!.minute.compareTo(b.startingTime!.minute));
-
-    return ListView.builder(
-      itemCount: eventsForSelectedDay.length,
-      itemBuilder: (context, index) {
-        Event event = eventsForSelectedDay[index];
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EventDetails(
-                  event: event.toMap(),
-                  onDelete: () {
-                    _deleteEvent(event);
-                  },
-                  onUpdate: (updatedEvent) {
-                    _updateEvent(updatedEvent);
-                  },
-                ),
-              ),
-            );
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            padding: const EdgeInsets.all(12.0),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: Colors.blue, width: 2.0),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  event.name,
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  event.description ?? '',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.white70,
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                Text(
-                  '${event.startingTime!.format(context)} - ${event.endingTime!.format(context)}',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

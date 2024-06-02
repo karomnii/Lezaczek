@@ -61,7 +61,8 @@ public class EventController {
     @PutMapping
     public ResponseEntity<?> createEvent(@RequestBody Event event, HttpServletRequest request) {
         try {
-            Long userId = currentUser.getUserId();
+            Long userId = currentUser.getCurrentUser().getUserId();
+            System.out.println("User id: " + userId);
             event.setUserID(userId.intValue());
         } catch (Throwable e) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Invalid authorization token"));

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 enum EventType { SINGLE, DAILY, WEEKLY }
 
@@ -36,10 +35,10 @@ class Event {
       description: json['description'],
       place: json['place'],
       eventType: EventType.values.firstWhere((e) => e.toString() == 'EventType.' + json['eventType']),
-      dateStart: DateTime.parse(json['dateStart']),
-      dateEnd: DateTime.parse(json['dateEnd']),
-      startingTime: TimeOfDay(hour: int.parse(json['startingTime'].split(':')[0]), minute: int.parse(json['startingTime'].split(':')[1])),
-      endingTime: TimeOfDay(hour: int.parse(json['endingTime'].split(':')[0]), minute: int.parse(json['endingTime'].split(':')[1])),
+      dateStart: _parseDateTime(json['dateStart']),
+      dateEnd: _parseDateTime(json['dateEnd']),
+      startingTime: _parseTimeOfDay(json['startingTime']),
+      endingTime: _parseTimeOfDay(json['endingTime']),
     );
   }
 
@@ -51,10 +50,36 @@ class Event {
       'description': description,
       'place': place,
       'eventType': eventType.toString().split('.').last,
-      'dateStart': dateStart.toIso8601String(),
-      'dateEnd': dateEnd.toIso8601String(),
-      'startingTime': '${startingTime.hour}:${startingTime.minute}',
-      'endingTime': '${endingTime.hour}:${endingTime.minute}',
+      'dateStart': _formatDateTime(dateStart),
+      'dateEnd': _formatDateTime(dateEnd),
+      'startingTime': _formatTimeOfDay(startingTime),
+      'endingTime': _formatTimeOfDay(endingTime),
     };
   }
+
+  static TimeOfDay _parseTimeOfDay(String time) {
+    final parts = time.split(':');
+    return TimeOfDay(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1])
+    );
+  }
+
+  static String _formatTimeOfDay(TimeOfDay time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:00';
+  }
+
+  static String _formatDateTime(DateTime date)
+  {
+    String stringDate ="";
+    stringDate = "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}" ;
+    return stringDate;
+  }
+
+  static DateTime _parseDateTime(String date)
+  {
+    final parts = DateTime.parse(date);
+    return DateTime(parts.year, parts.month, parts.day);
+  }
 }
+

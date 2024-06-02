@@ -1,5 +1,3 @@
-// lib/pages/calendar/event_details.dart
-
 import 'package:flutter/material.dart';
 import 'package:frontend/models/event.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +22,10 @@ class EventDetails extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(currentEvent.name),
+        title: Text(
+          currentEvent.name,
+          style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.edit),
@@ -55,36 +56,125 @@ class EventDetails extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              currentEvent.description ?? 'No description available',
-              style: TextStyle(fontSize: 16.0),
+        child: Card(
+          elevation: 4.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow(Icons.description, 'Description', currentEvent.description ?? 'No description available'),
+                SizedBox(height: 16.0),
+                _buildDetailRow(Icons.location_on, 'Place', currentEvent.place ?? 'Not specified'),
+                SizedBox(height: 16.0),
+                _buildDetailRow(Icons.event, 'Type', currentEvent.eventType.toString().split('.').last),
+                SizedBox(height: 16.0),
+                _buildEventSpecificDetails(currentEvent, context),
+              ],
             ),
-            SizedBox(height: 8.0),
-            Text(
-              'Place: ${currentEvent.place ?? 'Not specified'}',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Type: ${currentEvent.eventType}',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Start: $dateStart $startingTime',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'End: $dateEnd $endingTime',
-              style: TextStyle(fontSize: 16.0),
-            ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.blue, size: 28.0),
+        SizedBox(width: 16.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 4.0),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEventSpecificDetails(Event event, BuildContext context) {
+    String dateStart = DateFormat('yyyy-MM-dd').format(event.dateStart);
+    String dateEnd = DateFormat('yyyy-MM-dd').format(event.dateEnd);
+    String startingTime = event.startingTime.format(context);
+    String endingTime = event.endingTime.format(context);
+
+    if (event.eventType == EventType.SINGLE) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDetailRow(Icons.calendar_today, 'Date', dateStart),
+          SizedBox(height: 16.0),
+          _buildTimeRow('Start Time', startingTime, context),
+          SizedBox(height: 16.0),
+          _buildTimeRow('End Time', endingTime, context),
+        ],
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDetailRow(Icons.calendar_today, 'Start Date', dateStart),
+          SizedBox(height: 16.0),
+          _buildDetailRow(Icons.calendar_today, 'End Date', dateEnd),
+          SizedBox(height: 16.0),
+          _buildTimeRow('Start Time', startingTime, context),
+          SizedBox(height: 16.0),
+          _buildTimeRow('End Time', endingTime, context),
+        ],
+      );
+    }
+  }
+
+  Widget _buildTimeRow(String label, String time, BuildContext context) {
+    return Row(
+      children: [
+        Icon(Icons.access_time, color: Colors.blue, size: 28.0),
+        SizedBox(width: 16.0),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 4.0),
+              Text(
+                time,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
