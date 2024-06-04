@@ -42,7 +42,7 @@ public class EventService {
             throw new RuntimeException("Authorization token invalid");
         }
     }
-    
+
     public Event createEvent(Event event) {
         validateEvent(event);
         return eventsRepository.save(event);
@@ -87,7 +87,7 @@ public class EventService {
         }
     }
 
-    public boolean eventMatchesUser(Event event, HttpServletRequest request){
+    public boolean eventMatchesUser(Event event, HttpServletRequest request) {
         try {
             // Long userId = 1L; // hardcoded for testing
             Long userId = currentUser.getCurrentUser().getUserId();
@@ -98,7 +98,7 @@ public class EventService {
         return true;
     }
 
-    public boolean eventIdMatchesUser(Long eventId, HttpServletRequest request){
+    public boolean eventIdMatchesUser(Long eventId, HttpServletRequest request) {
         Optional<Event> eventOpt = eventsRepository.findById(eventId);
         if (eventOpt.isEmpty()) return false;
         Event event = eventOpt.get();
@@ -128,10 +128,10 @@ public class EventService {
         if (event.getEndingTime() == null) {
             throw new RuntimeException("Event end time cannot be empty");
         }
-        if(event.getDateStart().after(event.getDateEnd())){
+        if (event.getDateStart().after(event.getDateEnd())) {
             throw new RuntimeException("Event start date cannot be after end date");
         }
-        if(event.getStartingTime().after(event.getEndingTime())){
+        if (event.getStartingTime().after(event.getEndingTime())) {
             throw new RuntimeException("Event start time cannot be after end time");
         }
         switch (event.getEventType()) {

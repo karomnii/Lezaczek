@@ -29,3 +29,4 @@ public interface EventsRepository extends JpaRepository<Event, Long> {
     List<Event> findByDateUserId(@Param("dateSelected") Date dateSelected,@Param("userId") int userId);
 
 }
+

@@ -2,44 +2,58 @@ package backend.lezaczek.Services;
 
 import backend.lezaczek.Helpers.JwtTokenHelper;
 import backend.lezaczek.Model.News;
+import backend.lezaczek.Model.User;
 import backend.lezaczek.Repositories.NewsRepository;
+import backend.lezaczek.Repositories.UsersRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.DateFormatter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class NewsService {
     private final NewsRepository newsRepository;
 
+    private UsersRepository usersRepository;
+
     @Autowired
     JwtTokenHelper jwtTokenHelper;
     @Autowired
-    public NewsService(NewsRepository newsRepository) {
+    public NewsService(NewsRepository newsRepository, UsersRepository usersRepository) {
         this.newsRepository = newsRepository;
+        this.usersRepository = usersRepository;
     }
 
-    public List<News> getNews() {
-        return newsRepository.findAll();
+    public List<News> getNews(HttpServletRequest request) {
+        try {
+            jwtTokenHelper.extractUserId(request);
+            return newsRepository.findAll();
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
     }
 
-    public Optional<News> getNewsById(Long newsId){
-        return newsRepository.findById(newsId);
+    public Optional<News> getNewsById(Long newsId, HttpServletRequest request){
+        try {
+            jwtTokenHelper.extractUserId(request);
+            return newsRepository.findById(newsId);
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
     }
 
-    public void addNews(News news) {
-        Optional<News> newsByName = newsRepository.findByName(news.getName());
+    public News addNews(News news, HttpServletRequest request){
+        Optional<News> newsByName = newsRepository.findNewsByName(news.getName());
         if(newsByName.isPresent()){
             throw new RuntimeException("News already exists");
         }
@@ -47,22 +61,42 @@ public class NewsService {
         if(!isValid){
             throw new RuntimeException("Invalid news parameters");
         }
+        //TODO: try to implement userValidation method
+        Long userId;
+        try {
+            userId = jwtTokenHelper.extractUserId(request);
+//            userId = 2L; //test value
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
+        User user = usersRepository.findUserByUserId(userId);
+        if(user.getIsAdmin() == 0){
+            throw new RuntimeException("You don't have permission to this resource");
+        }
+        news.setUserId(userId);
+        news.setDateAdded(LocalDateTime.now());
         newsRepository.save(news);
+        return news;
     }
 
     public void deleteNews(Long newsId, HttpServletRequest request) {
         Optional<News> newsOptional = newsRepository.findById(newsId);
         if(newsOptional.isPresent()){
-            News news = newsOptional.get();
+            Long userId;
             try {
-                Long userId = jwtTokenHelper.extractUserId(request);
-                if(news.getUserId() != userId){
-                    throw new RuntimeException("Authorization failed - you don't have access to that functionality");
-                }
-                newsRepository.deleteById(newsId);
+                userId = jwtTokenHelper.extractUserId(request);
+//                userId = 2L; //test value
             }
             catch (Throwable e){
                 throw new RuntimeException("Authorization token is invalid");
+            }
+            User user = usersRepository.findUserByUserId(userId);
+            if(user.getIsAdmin() == 1){
+                newsRepository.deleteById(newsId);
+            }
+            else{
+                throw new RuntimeException("You don't have permission to this resource");
             }
         }
         else{
@@ -71,13 +105,29 @@ public class NewsService {
     }
 
     @Transactional
-    public News updateNews(Long newsId, String name, String description, String dateOfEvent, String place, String startingTime, String endingTime) {
+    public News updateNews(HttpServletRequest request, Long newsId, String name, String description, String dateOfEvent, String place, String startingTime, String endingTime) {
         News news = newsRepository.findById(newsId).orElseThrow(() ->new RuntimeException("News doesn't exist"));
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        Long userId;
+        try {
+            userId = jwtTokenHelper.extractUserId(request);
+//            userId = 2L; //test value
+        }
+        catch (Throwable e){
+            throw new RuntimeException("Authorization token is invalid");
+        }
+        User user = usersRepository.findUserByUserId(userId);
+        if(user.getIsAdmin() == 0){
+            throw new RuntimeException("You don't have permission to this resource");
+        }
         if(name != null){
             if(name.isEmpty()){
                 throw new RuntimeException("News name is invalid. Changes discarded");
+            }
+            Optional <News> newsOptional = newsRepository.findNewsByName(name);
+            if(newsOptional.isPresent()){
+                throw new RuntimeException("This event name already exists");
             }
             news.setName(name);
         }

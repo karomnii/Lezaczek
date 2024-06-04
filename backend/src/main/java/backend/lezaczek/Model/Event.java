@@ -28,17 +28,19 @@ import jakarta.persistence.Table;
 @Table(name = "Events")
 public class Event implements Serializable {
     public enum EventType {SINGLE, DAILY, WEEKLY}
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int eventId;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int eventId;
     private int userID;
     private String name;
     private String description;
     private String place;
     private EventType eventType;
-    @JsonFormat(pattern="yyyy-MM-dd") 
-    private Date dateStart;
     @JsonFormat(pattern="yyyy-MM-dd")
+    private Date dateStart;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateEnd;
     private Time startingTime;
     private Time endingTime;
-
 }

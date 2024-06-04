@@ -58,6 +58,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(new ErrorResponse("Invalid authorization token"));
         }
     }
+
     @PutMapping
     public ResponseEntity<?> createEvent(@RequestBody Event event, HttpServletRequest request) {
         try {
@@ -77,6 +78,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         }
     }
+
     @PostMapping
     public ResponseEntity<?> updateEvent(@RequestBody Event event, HttpServletRequest request) {
         if (!eventService.eventMatchesUser(event, request)) {
@@ -89,14 +91,15 @@ public class EventController {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEvent(@PathVariable Long id, HttpServletRequest request) {
         try {
             eventService.deleteEvent(id, request);
         } catch (RuntimeException e) {
-            if (e.getMessage().equals("Event not found")){
+            if (e.getMessage().equals("Event not found")) {
                 return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
-            } else{
+            } else {
                 return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
             }
         }

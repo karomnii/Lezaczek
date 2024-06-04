@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
-    @Query("SELECT n FROM News n WHERE n.name = ?1")
-    Optional<News> findByName(String name);
+    Optional<News> findNewsByName(String newsName);
 
 }
