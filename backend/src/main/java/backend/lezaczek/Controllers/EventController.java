@@ -44,7 +44,9 @@ public class EventController {
     }
 
     @GetMapping("/date/{selectedDate}")
-    public ResponseEntity<?> getEventsByDate(@PathVariable String selectedDate, HttpServletRequest request) { // selectedDate format: "yyyy-MM-dd"
+    public ResponseEntity<?> getEventsByDate(@PathVariable String selectedDate, HttpServletRequest request) { // selectedDate
+                                                                                                              // format:
+                                                                                                              // "yyyy-MM-dd"
         Date date;
         try {
             date = Date.valueOf(selectedDate);

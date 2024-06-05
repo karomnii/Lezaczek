@@ -19,11 +19,12 @@ public class JwtTokenHelper {
     private String SECRET;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         System.out.println(SECRET);
     }
+
     public String generateToken(Long userId, Long expiration) {
-        System.out.println("generateToken: "+SECRET);
+        System.out.println("generateToken: " + SECRET);
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -31,16 +32,18 @@ public class JwtTokenHelper {
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
+
     public Claims extractClaims(HttpServletRequest request) throws Throwable {
         String token;
-        for (Cookie cookie : request.getCookies()){
-            if (cookie.getName().equals("refreshToken")){
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals("refreshToken")) {
                 token = cookie.getValue();
                 return extractClaims(token);
             }
         }
         throw new Throwable("no cookie");
     }
+
     public Claims extractClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET)
@@ -51,7 +54,7 @@ public class JwtTokenHelper {
     public boolean isTokenExpired(String token) {
         try {
             extractClaims(token).getExpiration().before(new Date(System.currentTimeMillis()));
-        } catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             return true;
         }
         return false;
@@ -60,10 +63,11 @@ public class JwtTokenHelper {
     public Long extractUserId(String token) {
         return Long.parseLong(extractClaims(token).getSubject());
     }
-    public Long extractUserId(HttpServletRequest request) throws Throwable{
+
+    public Long extractUserId(HttpServletRequest request) throws Throwable {
         String token;
-        for (Cookie cookie : request.getCookies()){
-            if (cookie.getName().equals("accessToken")){
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals("accessToken")) {
                 token = cookie.getValue();
                 return extractUserId(token);
             }

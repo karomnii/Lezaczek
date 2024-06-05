@@ -25,10 +25,6 @@ public class EventService {
     @Autowired
     private User currentUser;
 
-    public List<Event> getAllEvents() {
-        return eventsRepository.findAll();
-    }
-
     public Optional<Event> getEventById(Long id) {
         return eventsRepository.findById(id);
     }
@@ -91,7 +87,8 @@ public class EventService {
         try {
             // Long userId = 1L; // hardcoded for testing
             Long userId = currentUser.getCurrentUser().getUserId();
-            if (event.getUserID() != userId) return false;
+            if (event.getUserID() != userId)
+                return false;
         } catch (Throwable e) {
             return false;
         }
@@ -100,12 +97,14 @@ public class EventService {
 
     public boolean eventIdMatchesUser(Long eventId, HttpServletRequest request) {
         Optional<Event> eventOpt = eventsRepository.findById(eventId);
-        if (eventOpt.isEmpty()) return false;
+        if (eventOpt.isEmpty())
+            return false;
         Event event = eventOpt.get();
         try {
             // Long userId = 1L; // hardcoded for testing
             Long userId = currentUser.getCurrentUser().getUserId();
-            if (event.getUserID() != userId) return false;
+            if (event.getUserID() != userId)
+                return false;
         } catch (Throwable e) {
             return false;
         }

@@ -12,23 +12,22 @@ import backend.lezaczek.Services.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    
+
     @Autowired
     UserService userService;
 
     @Autowired
     User currentUser;
 
-    @PostMapping(path = "/delete", consumes ="application/json", produces = "application/json")
+    @PostMapping("/delete")
     public ResponseEntity<?> postMethodName(@RequestBody String entity) {
         Long userId = currentUser.getCurrentUser().getUserId();
         try {
             userService.deleteUser(userId);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Cannot delete account"));
         }
         return ResponseEntity.ok(new Response("Account deleted"));

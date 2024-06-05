@@ -6,6 +6,7 @@ import lombok.ToString;
 import java.util.List;
 
 import backend.lezaczek.Model.Event;
+
 @ToString
 public class EventResponse extends Response {
     @Getter

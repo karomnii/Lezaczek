@@ -1,7 +1,10 @@
 package backend.lezaczek.Model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
@@ -10,27 +13,19 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "Session")
 public class Session {
-    @Getter @Setter @Id private int userId;
-    @Getter @Setter private String token;
+    @Id
+    private int userId;
+    private String token;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name ="userId")
+    @JoinColumn(name = "userId")
     private User user;
-    public Session() {}
-
-    public Session(int userId, String token) {
-        this.userId = userId;
-        this.token = token;
-
-    }
-    @Override
-    public String toString() {
-        return "{" +
-                "\"userId\":\"" + userId + "\"" +
-                ", \"token\":\"" + token + "\"" +
-                "}";
-    }
 }

@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-
 import backend.lezaczek.Helpers.JwtTokenHelper;
 import backend.lezaczek.HttpInterfaces.ErrorResponse;
 import backend.lezaczek.Model.User;
@@ -16,8 +15,6 @@ import backend.lezaczek.Services.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-
 
 @Component
 public class SessionHandler implements HandlerInterceptor {
@@ -27,22 +24,23 @@ public class SessionHandler implements HandlerInterceptor {
     UserService userService;
     @Autowired
     private User currentUser;
-    
+
+    @SuppressWarnings("null")
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
         String token = getToken(request, "accessToken");
-        if (!(token.length() > 0)){
+        if (!(token.length() > 0)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(new ErrorResponse("Token not found").toJsonString());
             return false;
         }
-        boolean isValidSession = checkSession(token, response);
-        if (!isValidSession) {
+        if (!isValidToken(token, response)) {
             return false;
         }
         Long userId = jwtTokenHelper.extractUserId(token);
         Optional<User> user = userService.findById(userId);
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             response.getWriter().write(new ErrorResponse("No user matches given token").toJsonString());
             return false;
@@ -50,29 +48,25 @@ public class SessionHandler implements HandlerInterceptor {
         currentUser.setCurrentUser(user.get());
         return true;
     }
-    public String getToken(HttpServletRequest request, String tokenName){
-        if(request.getCookies() != null){
-            for (Cookie cookie : request.getCookies()){
-                if(cookie.getName().equals(tokenName)){
+
+    public String getToken(HttpServletRequest request, String tokenName) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(tokenName)) {
                     return cookie.getValue();
                 }
             }
         }
         return "";
     }
-    public boolean checkSession(String token, HttpServletResponse response) throws IOException {
-        if (token.length() > 0){
-            return isValidToken(token, response);
-        }
 
-        return false;
-    }
-    public boolean isValidToken(String token, HttpServletResponse response) throws IOException{
-        if(jwtTokenHelper.isTokenExpired(token)) {
+    public boolean isValidToken(String token, HttpServletResponse response) throws IOException {
+        if (jwtTokenHelper.isTokenExpired(token)) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(new ErrorResponse("Token expired").toJsonString());
             return false;
-        };
+        }
+        ;
         return true;
     }
 }

@@ -5,6 +5,8 @@ import java.sql.Time;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import io.micrometer.common.lang.Nullable;
+
 import java.sql.Date;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +20,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-
 @Entity
 @Getter
 @Setter
@@ -27,17 +28,21 @@ import jakarta.persistence.Table;
 @NoArgsConstructor
 @Table(name = "Events")
 public class Event implements Serializable {
-    public enum EventType {SINGLE, DAILY, WEEKLY}
+    public enum EventType {
+        SINGLE, DAILY, WEEKLY
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventId;
     private int userID;
     private String name;
+    @Nullable
     private String description;
+    @Nullable
     private String place;
     private EventType eventType;
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateStart;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateEnd;
