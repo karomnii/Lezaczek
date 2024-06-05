@@ -37,7 +37,6 @@ class EventDetails extends StatelessWidget {
                     initialEvent: currentEvent,
                     onSave: (updatedEvent) {
                       onUpdate(updatedEvent);
-                      Navigator.pop(context, "Event updated successfully");
                     },
                   ),
                 ),

@@ -185,7 +185,6 @@ class _EventFormState extends State<EventForm> {
                           endingTime: _endingTime,
                         );
                         widget.onSave(newEvent);
-                        Navigator.pop(context, "Event ${widget.initialEvent == null ? 'added' : 'updated'} successfully");
                       }
                     },
                     child: Text(widget.initialEvent == null ? 'Add' : 'Update'),

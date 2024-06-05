@@ -27,45 +27,104 @@ class _CalendarState extends State<Calendar> {
 
   void _refreshEvents() {
     setState(() {
-      futureEvents = EventService.getEventsByDate(
-          DateFormat('yyyy-MM-dd').format(selectedDate));
+      try {
+        futureEvents = EventService.getEventsByDate(
+            DateFormat('yyyy-MM-dd').format(selectedDate));
+        if (errorMessage != null) {
+          errorMessage = null;
+        }
+      } catch (e) {
+        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
+      }
     });
   }
 
-  void _addEvent(Event event) async {
-    try {
-      Event createdEvent = await EventApi().createEvent(event);
+  void _addEvent(Event event, BuildContext context) {
+    EventService.createEvent(event).catchError((e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'Zamknij',
+                    )),
+              ],
+            )
+          ],
+          title: const Text('Error occurred'),
+          content: Text(e is Error ? e.text : 'Unexpected error occurred'),
+          contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+        ),
+      );
+      return null;
+    }).then((res) {
+      Event? createdEvent = res;
+      if (createdEvent == null) {
+        return;
+      }
       setState(() {
         futureEvents = futureEvents.then((events) {
           events.add(createdEvent);
           return events;
         });
       });
-    } catch (e) {
-      setState(() {
-        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
-      });
-    }
+      if (mounted) {
+        Navigator.pop(context, "Event added successfully");
+      }
+    });
   }
 
-  void _updateEvent(Event updatedEvent) async {
-    try {
-      Event updatedEventFromApi = await EventApi().updateEvent(updatedEvent);
+  void _updateEvent(Event updatedEvent, BuildContext context) {
+    EventService.updateEvent(updatedEvent).catchError((e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'Zamknij',
+                    )),
+              ],
+            )
+          ],
+          title: const Text('Error occurred'),
+          content: Text(e is Error ? e.text : 'Unexpected error occurred'),
+          contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+        ),
+      );
+      return null;
+    }).then((event) {
+      Event? updatedEvent = event;
+      if (updatedEvent == null) {
+        return;
+      }
       setState(() {
         futureEvents = futureEvents.then((events) {
-          int index = events.indexWhere((event) =>
-          event.eventId == updatedEventFromApi.eventId);
+          int index = events
+              .indexWhere((event) => event.eventId == updatedEvent.eventId);
           if (index != -1) {
-            events[index] = updatedEventFromApi;
+            events[index] = updatedEvent;
           }
           return events;
         });
       });
-    } catch (e) {
-      setState(() {
-        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
-      });
-    }
+      if (mounted) {
+        Navigator.pop(context, "Event updated successfully");
+      }
+    });
   }
 
   void _deleteEvent(Event event) async {
@@ -84,68 +143,6 @@ class _CalendarState extends State<Calendar> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _refreshEvents();
-  }
-
-  void _refreshEvents() {
-    setState(() {
-      futureEvents = EventService.getEventsByDate(DateFormat('yyyy-MM-dd').format(selectedDate));
-    });
-  }
-
-  void _addEvent(Event event) async {
-    try {
-      Event createdEvent = await EventApi().createEvent(event);
-      setState(() {
-        futureEvents = futureEvents.then((events) {
-          events.add(createdEvent);
-          return events;
-        });
-      });
-    } catch (e) {
-      setState(() {
-        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
-      });
-    }
-  }
-
-  void _updateEvent(Event updatedEvent) async {
-    try {
-      Event updatedEventFromApi = await EventApi().updateEvent(updatedEvent);
-      setState(() {
-        futureEvents = futureEvents.then((events) {
-          int index = events.indexWhere((event) => event.eventId == updatedEventFromApi.eventId);
-          if (index != -1) {
-            events[index] = updatedEventFromApi;
-          }
-          return events;
-        });
-      });
-    } catch (e) {
-      setState(() {
-        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
-      });
-    }
-  }
-
-  void _deleteEvent(Event event) async {
-    try {
-      await EventApi().deleteEvent(event.eventId);
-      setState(() {
-        futureEvents = futureEvents.then((events) {
-          events.removeWhere((e) => e.eventId == event.eventId);
-          return events;
-        });
-      });
-    } catch (e) {
-      setState(() {
-        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,19 +153,21 @@ class _CalendarState extends State<Calendar> {
         centerTitle: true,
         scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
+        leading: DrawerButton(
+          onPressed: () => Scaffold.of(context).openDrawer(),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () async {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      EventForm(
-                        onSave: (newEvent) {
-                          _addEvent(newEvent);
-                        },
-                      ),
+                  builder: (context) => EventForm(
+                    onSave: (newEvent) {
+                      _addEvent(newEvent, context);
+                    },
+                  ),
                 ),
               );
               if (result != null && result is String) {
@@ -211,9 +210,10 @@ class _CalendarState extends State<Calendar> {
                 } else {
                   List<Event> eventsForSelectedDay = snapshot.data!;
                   eventsForSelectedDay.sort((a, b) =>
-                  a.startingTime.hour.compareTo(b.startingTime.hour) != 0
-                      ? a.startingTime.hour.compareTo(b.startingTime.hour)
-                      : a.startingTime.minute.compareTo(b.startingTime.minute));
+                      a.startingTime.hour.compareTo(b.startingTime.hour) != 0
+                          ? a.startingTime.hour.compareTo(b.startingTime.hour)
+                          : a.startingTime.minute
+                              .compareTo(b.startingTime.minute));
                   return ListView.builder(
                     itemCount: eventsForSelectedDay.length,
                     itemBuilder: (context, index) {
@@ -223,16 +223,15 @@ class _CalendarState extends State<Calendar> {
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  EventDetails(
-                                    event: event.toMap(),
-                                    onDelete: () {
-                                      _deleteEvent(event);
-                                    },
-                                    onUpdate: (updatedEvent) {
-                                      _updateEvent(updatedEvent);
-                                    },
-                                  ),
+                              builder: (context) => EventDetails(
+                                event: event.toMap(),
+                                onDelete: () {
+                                  _deleteEvent(event);
+                                },
+                                onUpdate: (updatedEvent) {
+                                  _updateEvent(updatedEvent, context);
+                                },
+                              ),
                             ),
                           );
                           if (result != null && result is String) {
@@ -272,8 +271,7 @@ class _CalendarState extends State<Calendar> {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                '${event.startingTime.format(context)} - ${event
-                                    .endingTime.format(context)}',
+                                '${event.startingTime.format(context)} - ${event.endingTime.format(context)}',
                                 style: TextStyle(
                                   fontSize: 14.0,
                                   color: Colors.white,

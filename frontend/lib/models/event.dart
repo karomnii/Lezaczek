@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 enum EventType { SINGLE, DAILY, WEEKLY }
 
-enum EventType { SINGLE, DAILY, WEEKLY }
-
 class Event {
   int eventId;
   int userID;
