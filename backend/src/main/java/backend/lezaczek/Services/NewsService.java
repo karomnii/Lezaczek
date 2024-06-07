@@ -33,8 +33,8 @@ public class NewsService {
 
     public List<News> getNews(HttpServletRequest request) {
         try {
-            jwtTokenHelper.extractUserId(request);
-            return newsRepository.findAll();
+//            jwtTokenHelper.extractUserId(request);
+            return newsRepository.findAllByOrderByDateOfEventAsc();
         }
         catch (Throwable e){
             throw new RuntimeException("Authorization token is invalid");
