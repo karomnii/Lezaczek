@@ -29,27 +29,32 @@ class EventDetails extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => EventForm(
                     initialEvent: currentEvent,
                     onSave: (updatedEvent) {
                       onUpdate(updatedEvent);
-                      Navigator.pop(context);
-                      Navigator.pop(context); // Close the EventDetails page
                     },
                   ),
                 ),
               );
+              if (result != null && result is String) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result),
+                  ),
+                );
+              }
             },
           ),
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
               onDelete();
-              Navigator.pop(context); // Go back to the calendar page after deletion
+              Navigator.pop(context, "Event deleted successfully"); // Go back to the calendar page after deletion
             },
           ),
         ],
@@ -66,7 +71,7 @@ class EventDetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDetailRow(Icons.description, 'Description', currentEvent.description ?? 'No description available'),
+                _buildDescriptionField(currentEvent.description),
                 SizedBox(height: 16.0),
                 _buildDetailRow(Icons.location_on, 'Place', currentEvent.place ?? 'Not specified'),
                 SizedBox(height: 16.0),
@@ -78,6 +83,34 @@ class EventDetails extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDescriptionField(String? description) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Description',
+          style: TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[600],
+          ),
+        ),
+        SizedBox(height: 8.0),
+        Container(
+          padding: EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Text(
+            description ?? 'No description available',
+            style: TextStyle(fontSize: 16.0),
+          ),
+        ),
+      ],
     );
   }
 

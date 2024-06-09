@@ -22,7 +22,7 @@ class EventApi {
     }
   }
 
-  Future<Event> createEvent(Event event) async {
+  Future<Event?> createEvent(Event event) async {
     final response = await HttpHelper.put('http://localhost:8080/api/v1/events',
         body: event.toMap());
     print(event.toMap());
@@ -39,7 +39,7 @@ class EventApi {
     }
   }
 
-  Future<Event> updateEvent(Event event) async {
+  Future<Event?> updateEvent(Event event) async {
     final response = await HttpHelper.post(
         'http://localhost:8080/api/v1/events',
         body: event.toMap());

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,6 +9,21 @@ class HttpHelper {
 
   static Map<String, String> headers = {"content-type": "application/json"};
   static Map<String, String> cookies = {};
+
+  static Future<http.Response> assertAccess(Function cb) async {
+    http.Response initialResponse = await cb();
+    if (initialResponse.statusCode == HttpStatus.unauthorized) {
+      var authResponse = await http.get(
+          Uri.parse("http://localhost:8080/api/v1/auth/refresh"),
+          headers: headers);
+          _updateCookie(authResponse);
+      if (authResponse.statusCode != HttpStatus.ok) {
+        return Future(() => authResponse);
+      }
+      return cb();
+    }
+    return Future(() => initialResponse);
+  }
 
   static void updateCookieFromHeaders() {
     headers['cookie'] = _generateCookieHeader();
@@ -67,7 +83,8 @@ class HttpHelper {
 
   static Future<http.Response> get(String url) {
     final Uri uri = Uri.parse(url);
-    return http.get(uri, headers: headers).then((http.Response response) {
+    return assertAccess(() => http.get(uri, headers: headers))
+        .then((http.Response response) {
       _updateCookie(response);
       return response;
     });
@@ -75,10 +92,10 @@ class HttpHelper {
 
   static Future<http.Response> post(String url, {body, encoding}) {
     final Uri uri = Uri.parse(url);
-    return http
-        .post(uri,
-            body: _encoder.convert(body), headers: headers, encoding: encoding)
-        .then((http.Response response) {
+    return assertAccess(() => http.post(uri,
+        body: _encoder.convert(body),
+        headers: headers,
+        encoding: encoding)).then((http.Response response) {
       _updateCookie(response);
       return response;
     });
@@ -86,10 +103,10 @@ class HttpHelper {
 
   static Future<http.Response> put(String url, {body, encoding}) {
     final Uri uri = Uri.parse(url);
-    return http
-        .put(uri,
-            body: _encoder.convert(body), headers: headers, encoding: encoding)
-        .then((http.Response response) {
+    return assertAccess(() => http.put(uri,
+        body: _encoder.convert(body),
+        headers: headers,
+        encoding: encoding)).then((http.Response response) {
       _updateCookie(response);
 
       return response;
@@ -98,7 +115,8 @@ class HttpHelper {
 
   static Future<http.Response> delete(String url) {
     final Uri uri = Uri.parse(url);
-    return http.delete(uri, headers: headers).then((http.Response response) {
+    return assertAccess(() => http.delete(uri, headers: headers))
+        .then((http.Response response) {
       _updateCookie(response);
       return response;
     });

@@ -9,7 +9,6 @@ class LoginPage extends StatelessWidget {
   final ValueNotifier<User?> user;
   final ValueNotifier<String> activeScreenNotifier = ValueNotifier("login");
 
-  Future<void> register() async {}
 
   @override
   Widget build(BuildContext context) {

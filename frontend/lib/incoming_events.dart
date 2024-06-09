@@ -16,9 +16,12 @@ class _IncomingEventsState extends State<IncomingEvents> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Nadchodzące wydarzenia',
+          'Wydarzenia',
         ),
-        centerTitle: true,
+          leading: DrawerButton(
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+          centerTitle: true,
         scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
       ),

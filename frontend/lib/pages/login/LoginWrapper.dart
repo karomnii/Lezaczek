@@ -22,8 +22,6 @@ class LoginWrapper extends StatefulWidget {
 class _LoginWrapperState extends State<LoginWrapper> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  bool loginFailed = false;
-  String errorText = "";
 
   Future<dynamic> register() async {
     widget.currentScreen.value = "register";
@@ -33,12 +31,34 @@ class _LoginWrapperState extends State<LoginWrapper> {
     LoginFormData data = LoginFormData(
         email: emailController.text, password: passwordController.text);
     dynamic response = await UserService.login(data);
-    if (response.runtimeType == Error) {
-      loginFailed = true;
-      setState(() {
-        loginFailed = true;
-        errorText = response.text;
-      });
+    if (response.runtimeType == Error && mounted) {
+      showDialog(
+        context: context,
+        builder: (context) =>
+            AlertDialog(
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          'Zamknij',
+                        )
+                    ),
+                  ],
+                )
+              ],
+              title: const Text('Login failed'),
+              content: Text(response.text ?? "Unexpected error"),
+              contentTextStyle: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black
+              ),
+            ),
+      );
     } else if (response.runtimeType == User) {
       widget.user.value = response;
       StorageHelper.write("accessToken", response.accessToken);
@@ -89,11 +109,6 @@ class _LoginWrapperState extends State<LoginWrapper> {
                               ),
                               child: Column(
                                 children: <Widget>[
-                                  Visibility(
-                                      visible: loginFailed,
-                                      child: Text(errorText,
-                                          style: const TextStyle(
-                                              color: Colors.red, height: 1))),
                                   InputField(
                                       textController: emailController,
                                       hintText: "Email"),
