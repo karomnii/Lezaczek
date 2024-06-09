@@ -87,24 +87,6 @@ class SideBar extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(
-                  Icons.add
-              ),
-              title: const Text('Dodaj do planu'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(
-                  Icons.edit_calendar_rounded
-              ),
-              title: const Text('Edytuj plan'),
-              onTap: () {},
-            ),
-            Divider(
-              height: 20,
-              color: Colors.grey[300],
-            ),
-            ListTile(
-              leading: const Icon(
                   Icons.add_circle
               ),
               title: const Text('Dodaj wydarzenie'),
