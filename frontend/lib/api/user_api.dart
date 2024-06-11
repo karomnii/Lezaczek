@@ -58,7 +58,7 @@ class UserApi {
       return false;
     }
     else{
-      throw Error(text: 'Couldn\'t get data');
+      throw Error(text: 'Couldn\'t fetch admin status');
     }
   }
 }

@@ -5,8 +5,8 @@ import 'package:frontend/helpers/http_helper.dart';
 import 'package:frontend/pages/login/LoginPage.dart';
 import 'package:frontend/helpers/storage_helper.dart';
 import 'package:frontend/components/side_bar.dart';
+import 'package:frontend/pages/news/news_page.dart';
 
-import '../incoming_events.dart';
 import '../pages/calendar/calendar.dart';
 import '../models/user.dart';
 
@@ -20,9 +20,10 @@ class TemplateScreen extends StatefulWidget {
 class _TemplateScreenState extends State<TemplateScreen> {
   ValueNotifier<User?> userNotifier = ValueNotifier(null);
   int internIndex = 0;
-   final List<Widget> screens = [
+  late User userData;
+  late final List<Widget> screens = [
     const Calendar(),
-    const IncomingEvents(),
+    NewsPage(userData),
    ];
   @override
   void initState() {
@@ -62,6 +63,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                   if (userValue == null) {
                     return LoginPage(user: userNotifier);
                   };
+                  userData = userNotifier.value!;
                   return Scaffold(
                     drawer: SideBar(user: userNotifier),
                     body: screens[internIndex],

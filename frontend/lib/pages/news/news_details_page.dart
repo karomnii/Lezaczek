@@ -38,8 +38,8 @@ class NewsDetailsPage extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () async{
-                    final res = await Navigator.push(
+                  onPressed: () {
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => NewsForm(
@@ -47,25 +47,16 @@ class NewsDetailsPage extends StatelessWidget {
                                 onSave: (updatedNews){
                                   onUpdate(updatedNews);
                                   Navigator.pop(context);
-                                  Navigator.pop(context);
                                 }
                             )
                         )
                     );
-                    if (res != null && res is String) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(res),
-                        ),
-                      );
-                    }
                   },
                   icon: Icon(Icons.edit),
                 ),
                 IconButton(
                   onPressed: () {
                     onDelete();
-                    Navigator.pop(context, "News has been deleted successfully");
                   },
                   icon: Icon(Icons.delete),
                 ),

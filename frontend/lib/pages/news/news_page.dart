@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api/news_api.dart';
-import 'package:frontend/components/side_bar.dart';
 import 'package:frontend/models/error.dart';
 import 'package:frontend/pages/news/news_details_page.dart';
 import 'package:frontend/pages/news/news_form.dart';
 import 'package:intl/intl.dart';
-import '../../helpers/http_helper.dart';
-import '../../helpers/storage_helper.dart';
+import '../../api/user_api.dart';
 import '../../models/news.dart';
 import '../../models/user.dart';
-import '../login/LoginPage.dart';
-import '../../api/user_api.dart';
 
 class NewsPage extends StatefulWidget {
-  const NewsPage({super.key});
+  final User userDetails;
+  const NewsPage(this.userDetails, {super.key});
 
   @override
   State<NewsPage> createState() => _NewsPageState();
@@ -23,7 +20,67 @@ class _NewsPageState extends State<NewsPage> {
   late Future<List<News>> newsList;
   String? errorMsg;
   bool admin = false;
-  late User userDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    refreshData();
+    fetchAdminStatus(widget.userDetails);
+  }
+
+  Future<void> fetchAdminStatus(User userDetails) async{
+    try {
+      final isAdmin = await UserApi().isUserAnAdmin(userDetails);
+      setState(() {
+        admin = isAdmin;
+      }); // Update the local variable
+    } catch (error) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+                'Error'
+            ),
+            content: Text(error is Error ? error.text : 'Unexpected error has occurred'),
+            contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Close',
+                      )),
+                ],
+              )
+            ],
+          )
+      );
+    }
+  }
+
+  void refreshData() async{
+    try{
+      setState(() {
+        newsList = NewsApi().getNews();
+        if(errorMsg!=null){
+          errorMsg = null;
+        }
+      });
+    }
+    catch(error){
+      if(error is Error){
+        errorMsg = error.text;
+      }
+      else{
+        errorMsg = 'Unexpected error has occurred';
+      }
+    }
+  }
+
 
   void addNews(News news) async {
     try {
@@ -31,42 +88,81 @@ class _NewsPageState extends State<NewsPage> {
       setState(() {
         newsList = newsList.then((news) {
           news.add(createdNews);
+          refreshData();
           return news;
         });
       });
+      if(mounted){
+        Navigator.pop(context, 'News added successfully');
+      }
     }
-    catch (e){
-      setState(() {
-        if(e is Error){
-          errorMsg = e.text;
-        }
-        else{
-          errorMsg = 'Unexpected error has occured';
-        }
-      });
+    catch (error){
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+              'Error'
+            ),
+            content: Text(error is Error ? error.text : 'Unexpected error has occurred'),
+            contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Close',
+                      )),
+                ],
+              )
+            ],
+          )
+      );
     }
   }
 
   void updateNews(News updatedNews) async{
-    try{
-      News updateNews = await NewsApi().updateNews(updatedNews);
+    try {
+      News createdNews = await NewsApi().updateNews(updatedNews);
       setState(() {
-        newsList = newsList.then((news){
-          int updatedNewsIndex = news.indexWhere((news) => news.newsId == updateNews.newsId);
-          news[updatedNewsIndex] = updateNews;
+        newsList = newsList.then((news) {
+          news.add(createdNews);
+          refreshData();
           return news;
         });
       });
+      if(mounted){
+        Navigator.pop(context, 'News updated successfully');
+      }
     }
-    catch(e){
-      setState(() {
-        if(e is Error){
-          errorMsg = e.text;
-        }
-        else{
-          errorMsg = 'Unexpected error has occurred';
-        }
-      });
+    catch (error){
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+                'Error'
+            ),
+            content: Text(error is Error ? error.text : 'Unexpected error has occurred'),
+            contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Close',
+                      )),
+                ],
+              )
+            ],
+          )
+      );
     }
   }
 
@@ -76,66 +172,43 @@ class _NewsPageState extends State<NewsPage> {
       setState(() {
         newsList = newsList.then((news){
           news.removeWhere((news) => news.newsId == newsToDelete.newsId);
+          refreshData();
           return news;
         });
       });
+      Navigator.pop(context, "News deleted successfully");
     }
-    catch(e){
-      setState(() {
-        if(e is Error){
-          errorMsg = e.text;
-        }
-        else{
-          errorMsg = 'Unexpected error has occurred';
-        }
-      });
+    catch (error){
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+                'Error'
+            ),
+            content: Text(error is Error ? error.text : 'Unexpected error has occurred'),
+            contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Close',
+                      )),
+                ],
+              )
+            ],
+          )
+      );
     }
-  }
-
-  ValueNotifier<User?> userNotifier = ValueNotifier(null);
-  Future<User?> asyncInitUser() async {
-    String? accessToken = await StorageHelper.get("accessToken");
-    String? refreshToken = await StorageHelper.get("refreshToken");
-    String? name = await StorageHelper.get("name");
-    String? surname = await StorageHelper.get("surname");
-    String? email = await StorageHelper.get("email");
-    String? gender = await StorageHelper.get("gender");
-    Gender? userGender;
-    if (gender != null) {
-      userGender = Gender.values[int.parse(gender)];
-    }
-    if (refreshToken != null && accessToken != null && userGender != null) {
-      HttpHelper.setCookieVal("accessToken=${accessToken}");
-      HttpHelper.setCookieVal("refreshToken=${refreshToken}");
-      HttpHelper.updateCookieFromHeaders();
-      return User(accessToken: accessToken,
-          refreshToken: refreshToken,
-          name: name,
-          surname: surname,
-          email: email,
-          gender: userGender);
-    }
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<User?>(future: asyncInitUser(),
-        builder: (BuildContext context, AsyncSnapshot<User?> user) {
-          if (user.hasData) {
-            userNotifier.value = user.data;
-          }
-          return ValueListenableBuilder<User?>(
-              valueListenable: userNotifier,
-              builder: (BuildContext context, User? userValue,
-                  Widget? child) {
-                if (userValue == null) {
-                  return LoginPage(user: userNotifier);
-                }
-                refreshData();
-
-                return Scaffold(
-                  drawer: SideBar(user: userNotifier),
+    return Scaffold(
                   appBar: AppBar(
                     title: const Text(
                       'News',
@@ -143,22 +216,31 @@ class _NewsPageState extends State<NewsPage> {
                     centerTitle: true,
                     scrolledUnderElevation: 0.0,
                     backgroundColor: Colors.white,
-                    automaticallyImplyLeading: true,
+                    leading: DrawerButton(
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
                     actions: [
                       Visibility(
                         visible: admin == true,
                         child: IconButton(
-                          onPressed: (){
-                            Navigator.push(
+                          onPressed: () async {
+                            final res = await Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => NewsForm
                                   (onSave: (newsToAdd){
                                   addNews(newsToAdd);
-                                  Navigator.pop(context);
-                                })
+                                  })
                                 )
                             );
-
+                            if(res!=null && res is String){
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(res),
+                                ),
+                              );
+                            }
                           },
                           icon: Icon(Icons.add)
                       ),)
@@ -169,6 +251,16 @@ class _NewsPageState extends State<NewsPage> {
                     color: Colors.white,
                     child: Column(
                       children: [
+                        if(errorMsg!=null)
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              errorMsg!,
+                              style: TextStyle(
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
                         Expanded(
                             child: FutureBuilder<List<News>>(
                               future: newsList,
@@ -176,21 +268,14 @@ class _NewsPageState extends State<NewsPage> {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
                                   return Center(
-                                      child: CircularProgressIndicator());
+                                      child: CircularProgressIndicator()
+                                  );
                                 }
                                 else if(snapshot.hasError){
-                                  if(snapshot.error is Error){
-                                    errorMsg = (snapshot.error as Error).text;
-                                  }
-                                  else{
-                                    errorMsg = 'Unexpected error has occurred';
-                                  }
+                                  snapshot.error is Error ? (errorMsg = (snapshot.error as Error).text): ('Unexpected error has occurred');
                                   return Center(
                                       child:Text(
-                                          errorMsg!,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
+                                          errorMsg!
                                       )
                                   );
                                 }
@@ -199,9 +284,6 @@ class _NewsPageState extends State<NewsPage> {
                                   return Center(
                                       child: Text(
                                           'No news has been found',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                        ),
                                       )
                                   );
                                 }
@@ -220,8 +302,8 @@ class _NewsPageState extends State<NewsPage> {
                                               if(previousDate != currentDate)
                                                 createDateContainer(currentNews.dateOfEvent),
                                               GestureDetector(
-                                                onTap: (){
-                                                  Navigator.push(context,
+                                                onTap: () async {
+                                                   final res = await Navigator.push(context,
                                                       MaterialPageRoute(
                                                           builder: (context) => NewsDetailsPage(
                                                           news: currentNews.convertToMap(),
@@ -233,8 +315,15 @@ class _NewsPageState extends State<NewsPage> {
                                                           },
                                                           admin: admin,
                                                           )
-                                                      )
+                                                  )
                                                   );
+                                                   if(res!=null){
+                                                     ScaffoldMessenger.of(context).showSnackBar(
+                                                       SnackBar(
+                                                         content: Text(res),
+                                                       ),
+                                                     );
+                                                   }
                                                 },
                                                 child: Container(
                                                   margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
@@ -311,9 +400,6 @@ class _NewsPageState extends State<NewsPage> {
                     ),
                   ),
                 );
-              }
-          );
-        });
   }
 
   String timeFormatter(TimeOfDay time){
@@ -337,36 +423,5 @@ class _NewsPageState extends State<NewsPage> {
         ],
       ),
     );
-  }
-
-  void refreshData() async{
-      newsList = NewsApi().getNews();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    refreshData();
-    initUser();
-  }
-
-  Future<User?> initUser()async{
-    User? user = await asyncInitUser();
-    if(user != null){
-      userDetails = user;
-      fetchAdminStatus();
-    }
-  }
-
-  Future<void> fetchAdminStatus() async{
-    try {
-      final isAdmin = await UserApi().isUserAnAdmin(userDetails); // Replace with your logic
-      setState(() {
-        admin = isAdmin;
-      }); // Update the local variable
-    } catch (error) {
-      print('Error fetching admin status: $error');
-      // Handle the error (show an error message, retry, etc.)
-    }
   }
 }
