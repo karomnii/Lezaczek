@@ -29,12 +29,12 @@ class SideBar extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Zamknij'),
+                child: const Text('Close'),
               ),
             ],
-            title: const Text('Sukces'),
+            title: const Text('Success'),
             content: const Text(
-                'Twoje konto zostało usunięte. Zaraz nastąpi wylogowanie'),
+                'Your account has been deleted. You\'re about to be signed out...'),
             contentTextStyle: const TextStyle(
                 fontSize: 16,
                 color: Colors.black
@@ -52,7 +52,7 @@ class SideBar extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Zamknij'),
+                  child: const Text('Close'),
                 ),
               ],
               title: const Text('Error'),
@@ -87,27 +87,9 @@ class SideBar extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(
-                  Icons.add_circle
-              ),
-              title: const Text('Dodaj wydarzenie'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(
-                  Icons.edit
-              ),
-              title: const Text('Edytuj wydarzenia'),
-              onTap: () {},
-            ),
-            Divider(
-              height: 20,
-              color: Colors.grey[300],
-            ),
-            ListTile(
-              leading: const Icon(
                   Icons.logout
               ),
-              title: const Text('Wyloguj się'),
+              title: const Text('Sign out'),
               onTap: () {
                 showDialog(
                   context: context,
@@ -122,21 +104,21 @@ class SideBar extends StatelessWidget {
                                     Navigator.of(context).pop();
                                   },
                                   child: const Text(
-                                    'Zamknij',
+                                    'Close',
                                   )
                               ),
                               TextButton(
                                 onPressed: () => logout(context),
                                 child: const Text(
-                                  'Wyloguj',
+                                  'Sign out',
                                 ),
                               ),
                             ],
                           )
                         ],
-                        title: const Text('Wylogowanie'),
+                        title: const Text('Signing out'),
                         content: const Text(
-                            'Czy na pewno chcesz się wylogować?'),
+                            'Are you sure you want to sign out?'),
                         contentTextStyle: const TextStyle(
                             fontSize: 16,
                             color: Colors.black
@@ -151,7 +133,7 @@ class SideBar extends StatelessWidget {
                 color: Colors.red,
               ),
               title: const Text(
-                'Usuń konto',
+                'Delete account',
                 style: TextStyle(
                     color: Colors.red
                 ),
@@ -169,7 +151,7 @@ class SideBar extends StatelessWidget {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Nie'),
+                                child: const Text('No'),
                               ),
                               TextButton(
                                 onPressed: () {
@@ -178,7 +160,7 @@ class SideBar extends StatelessWidget {
                                   //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
                                 },
                                 child: Text(
-                                  'Tak',
+                                  'Yes',
                                   style: TextStyle(
                                       color: Colors.red[900],
                                       fontWeight: FontWeight.bold
@@ -188,9 +170,9 @@ class SideBar extends StatelessWidget {
                             ],
                           )
                         ],
-                        title: const Text('Usuwanie konta'),
+                        title: const Text('Delete account'),
                         content: const Text(
-                            'Czy na pewno chcesz usunąć swoje konto na stałe?'),
+                            'Are you sure you want to permanently delete your account?'),
                         contentTextStyle: const TextStyle(
                             fontSize: 16,
                             color: Colors.black
