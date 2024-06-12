@@ -5,7 +5,7 @@ import 'package:frontend/helpers/http_helper.dart';
 
 import '../models/news.dart';
 import '../models/error.dart';
-const String basicUrl = "http://10.0.2.2:8080/api/v1/news";
+const String basicUrl = "http://localhost:8080/api/v1/news";
 class NewsApi{
   Future<List<News>> getNews() async {
     final response = await HttpHelper.get(basicUrl);
