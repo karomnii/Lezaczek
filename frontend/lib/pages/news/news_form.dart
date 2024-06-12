@@ -116,6 +116,9 @@ class _NewsFormState extends State<NewsForm> {
                   description = enteredValue;
                 },
               ),
+              SizedBox(
+                height: 16,
+              ),
               DatePickerFormField(
                   initialValue: dateOfEvent,
                   label: 'News date',
@@ -124,6 +127,9 @@ class _NewsFormState extends State<NewsForm> {
                       dateOfEvent = date;
                     });
                   }
+              ),
+              SizedBox(
+                height: 16,
               ),
               TimePickerFormField(
                   initialValue: startingTime,
@@ -134,6 +140,9 @@ class _NewsFormState extends State<NewsForm> {
                     });
                   }
                 ),
+              SizedBox(
+                height: 16,
+              ),
               TimePickerFormField(
                   initialValue: endingTime,
                   label: 'Ending time',
