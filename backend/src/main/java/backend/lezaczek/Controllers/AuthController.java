@@ -2,6 +2,8 @@ package backend.lezaczek.Controllers;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,23 +44,27 @@ public class AuthController {
     JwtTokenHelper jwtTokenHelper;
     @Autowired
     SessionHandler sessionHandler;
-
-    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 minutes
+    private static Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", Pattern.CASE_INSENSITIVE);
+    private static Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$", Pattern.CASE_INSENSITIVE);
+    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 1; // 15 minutes
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
 
     @PostMapping(value = "/login", produces = {"application/json"}, consumes = {"application/json"})
-    public ResponseEntity<?> login(@RequestBody LoginRequest LoginRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("application/json");
+        Matcher emailMatcher = emailPattern.matcher(loginRequest.getEmail());
+        if (!emailMatcher.matches()){
+            return ResponseEntity.ok(new ErrorResponse("Invalid email"));
+        }
         User user;
-
         try {
-            user = userService.findByEmail(LoginRequest.getEmail());
+            user = userService.findByEmail(loginRequest.getEmail());
         }
         catch (Exception e) {
             return ResponseEntity.ok(new ErrorResponse("Invalid password or user not found"));
         }
 
-        Boolean isSuccessfulLogin = authService.authenticate(user, LoginRequest.getPassword());
+        Boolean isSuccessfulLogin = authService.authenticate(user, loginRequest.getPassword());
         if (!isSuccessfulLogin) {
             return ResponseEntity.ok(new ErrorResponse("Invalid password or user not found"));
         }
@@ -103,7 +109,7 @@ public class AuthController {
         }
     }
     @PutMapping(value = "/register", produces = {"application/json"}, consumes = {"application/json"})
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest, HttpServletResponse response) throws Exception {
         response.setContentType("application/json");
         try {
             for (Field field : registerRequest.getClass().getDeclaredFields()){
@@ -118,6 +124,10 @@ public class AuthController {
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ErrorResponse("Something went wrong"));
+        }
+        Matcher matcher = passwordPattern.matcher(registerRequest.getPassword());
+        if(!matcher.matches()){
+            return ResponseEntity.ok(new ErrorResponse("Password should be 8-20 characters long, contain at least one small letter, one capital letter, one digit"));
         }
         User user = new User(registerRequest);
         userService.saveUser(user);

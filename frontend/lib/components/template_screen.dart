@@ -29,6 +29,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
   void initState() {
     super.initState();
   }
+
   Future<User?> asyncInitUser() async {
     String? accessToken = await StorageHelper.get("accessToken");
     String? refreshToken = await StorageHelper.get("refreshToken");
@@ -37,21 +38,29 @@ class _TemplateScreenState extends State<TemplateScreen> {
     String? email = await StorageHelper.get("email");
     String? gender = await StorageHelper.get("gender");
     Gender? userGender;
-    if(gender != null) {
+    if (gender != null) {
       userGender = Gender.values[int.parse(gender)];
     }
-    if (refreshToken != null && accessToken != null && userGender != null){
-
+    if (refreshToken != null && accessToken != null && userGender != null) {
       HttpHelper.setCookieVal("accessToken=${accessToken}");
       HttpHelper.setCookieVal("refreshToken=${refreshToken}");
       HttpHelper.updateCookieFromHeaders();
-      return User(accessToken: accessToken, refreshToken: refreshToken, name: name, surname: surname, email: email, gender: userGender);
+      return User(
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          name: name,
+          surname: surname,
+          email: email,
+          gender: userGender);
     }
     return null;
   }
+
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<User?>(future: asyncInitUser(),
+    return FutureBuilder<User?>(
+        future: asyncInitUser(),
         builder: (BuildContext context, AsyncSnapshot<User?> user) {
           if (user.hasData) {
             userNotifier.value = user.data;
@@ -105,10 +114,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                       indicatorColor: Colors.grey[200],
                     ),
                   );
-                }
-            );
-
+              });
         });
   }
-  }
-
+}

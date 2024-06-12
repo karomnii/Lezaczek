@@ -27,43 +27,104 @@ class _CalendarState extends State<Calendar> {
 
   void _refreshEvents() {
     setState(() {
-      futureEvents = EventService.getEventsByDate(DateFormat('yyyy-MM-dd').format(selectedDate));
+      try {
+        futureEvents = EventService.getEventsByDate(
+            DateFormat('yyyy-MM-dd').format(selectedDate));
+        if (errorMessage != null) {
+          errorMessage = null;
+        }
+      } catch (e) {
+        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
+      }
     });
   }
 
-  void _addEvent(Event event) async {
-    try {
-      Event createdEvent = await EventApi().createEvent(event);
+  void _addEvent(Event event, BuildContext context) {
+    EventService.createEvent(event).catchError((e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'Zamknij',
+                    )),
+              ],
+            )
+          ],
+          title: const Text('Error occurred'),
+          content: Text(e is Error ? e.text : 'Unexpected error occurred'),
+          contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+        ),
+      );
+      return null;
+    }).then((res) {
+      Event? createdEvent = res;
+      if (createdEvent == null) {
+        return;
+      }
       setState(() {
         futureEvents = futureEvents.then((events) {
           events.add(createdEvent);
           return events;
         });
       });
-    } catch (e) {
-      setState(() {
-        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
-      });
-    }
+      if (mounted) {
+        Navigator.pop(context, "Event added successfully");
+      }
+    });
   }
 
-  void _updateEvent(Event updatedEvent) async {
-    try {
-      Event updatedEventFromApi = await EventApi().updateEvent(updatedEvent);
+  void _updateEvent(Event updatedEvent, BuildContext context) {
+    EventService.updateEvent(updatedEvent).catchError((e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'Zamknij',
+                    )),
+              ],
+            )
+          ],
+          title: const Text('Error occurred'),
+          content: Text(e is Error ? e.text : 'Unexpected error occurred'),
+          contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+        ),
+      );
+      return null;
+    }).then((event) {
+      Event? updatedEvent = event;
+      if (updatedEvent == null) {
+        return;
+      }
       setState(() {
         futureEvents = futureEvents.then((events) {
-          int index = events.indexWhere((event) => event.eventId == updatedEventFromApi.eventId);
+          int index = events
+              .indexWhere((event) => event.eventId == updatedEvent.eventId);
           if (index != -1) {
-            events[index] = updatedEventFromApi;
+            events[index] = updatedEvent;
           }
           return events;
         });
       });
-    } catch (e) {
-      setState(() {
-        errorMessage = e is Error ? e.text : 'Unexpected error occurred';
-      });
-    }
+      if (mounted) {
+        Navigator.pop(context, "Event updated successfully");
+      }
+    });
   }
 
   void _deleteEvent(Event event) async {
@@ -82,6 +143,7 @@ class _CalendarState extends State<Calendar> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,20 +153,30 @@ class _CalendarState extends State<Calendar> {
         centerTitle: true,
         scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
+        leading: DrawerButton(
+          onPressed: () => Scaffold.of(context).openDrawer(),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => EventForm(
                     onSave: (newEvent) {
-                      _addEvent(newEvent);
+                      _addEvent(newEvent, context);
                     },
                   ),
                 ),
               );
+              if (result != null && result is String) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result),
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -137,16 +209,18 @@ class _CalendarState extends State<Calendar> {
                   return Center(child: Text('No events found'));
                 } else {
                   List<Event> eventsForSelectedDay = snapshot.data!;
-                  eventsForSelectedDay.sort((a, b) => a.startingTime.hour.compareTo(b.startingTime.hour) != 0
-                      ? a.startingTime.hour.compareTo(b.startingTime.hour)
-                      : a.startingTime.minute.compareTo(b.startingTime.minute));
+                  eventsForSelectedDay.sort((a, b) =>
+                      a.startingTime.hour.compareTo(b.startingTime.hour) != 0
+                          ? a.startingTime.hour.compareTo(b.startingTime.hour)
+                          : a.startingTime.minute
+                              .compareTo(b.startingTime.minute));
                   return ListView.builder(
                     itemCount: eventsForSelectedDay.length,
                     itemBuilder: (context, index) {
                       Event event = eventsForSelectedDay[index];
                       return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => EventDetails(
@@ -155,14 +229,22 @@ class _CalendarState extends State<Calendar> {
                                   _deleteEvent(event);
                                 },
                                 onUpdate: (updatedEvent) {
-                                  _updateEvent(updatedEvent);
+                                  _updateEvent(updatedEvent, context);
                                 },
                               ),
                             ),
                           );
+                          if (result != null && result is String) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(result),
+                              ),
+                            );
+                          }
                         },
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 8.0),
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                             color: Colors.blue,

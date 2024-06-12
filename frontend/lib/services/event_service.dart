@@ -9,11 +9,11 @@ class EventService {
     return _api.getEventsByDate(selectedDate);
   }
 
-  static Future<Event> createEvent(Event event) async {
+  static Future<Event?> createEvent(Event event) async {
     return _api.createEvent(event);
   }
 
-  static Future<Event> updateEvent(Event event) async {
+  static Future<Event?> updateEvent(Event event) async {
     return _api.updateEvent(event);
   }
 
