@@ -124,6 +124,7 @@ class NewsDetailsPage extends StatelessWidget {
 
   Widget createOneDetail(IconData icon, String label, String data){
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(
           icon,
