@@ -102,16 +102,7 @@ class NewsApi{
     }
   }
 
-  Future<void> deleteOutdatedNews(int newsId) async{
-    final response = await HttpHelper.delete('$basicUrl/outdated/$newsId');
-    if(response.statusCode == 200){
-      final Map<String, dynamic> responseMap = json.decode(response.body);
-      if(responseMap['result'] != 'ok'){
-        throw Error.fromJson(responseMap);
-      }
-    }
-    else{
-      throw Error.fromJson(json.decode(response.body));
-    }
+  Future<void> deleteOutdatedNews(int newsId) async {
+    await HttpHelper.delete('$basicUrl/outdated/$newsId');
   }
 }
