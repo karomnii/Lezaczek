@@ -28,9 +28,9 @@ public class NewsController {
         this.newsService = newsService;
     }
     @GetMapping
-    public ResponseEntity<?> getNews(HttpServletRequest request){
+    public ResponseEntity<?> getNews(){
         try {
-            List<News> news = newsService.getNews(request);
+            List<News> news = newsService.getNews();
             return ResponseEntity.ok(new NewsResponse(news));
         }
         catch (RuntimeException e){
@@ -39,10 +39,9 @@ public class NewsController {
     }
 
     @GetMapping( "{newsId}")
-    public ResponseEntity<?> getNewsById(@PathVariable("newsId") Long newsId,
-                                         HttpServletRequest request) {
+    public ResponseEntity<?> getNewsById(@PathVariable("newsId") Long newsId) {
         try{
-            Optional <News> newsOptional = newsService.getNewsById(newsId, request);
+            Optional <News> newsOptional = newsService.getNewsById(newsId);
             if(newsOptional.isEmpty()){
                 return ResponseEntity.badRequest().body(new ErrorResponse("News not found"));
             }

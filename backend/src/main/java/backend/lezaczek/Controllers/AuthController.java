@@ -46,7 +46,7 @@ public class AuthController {
     SessionHandler sessionHandler;
     private static Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", Pattern.CASE_INSENSITIVE);
     private static Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$", Pattern.CASE_INSENSITIVE);
-    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 1; // 15 minutes
+    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15; // 15 minutes
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
 
     @PostMapping(value = "/login", produces = {"application/json"}, consumes = {"application/json"})
