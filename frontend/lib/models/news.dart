@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/event.dart';
 
 class News{
   int newsId;
@@ -95,5 +96,20 @@ class News{
 
   static String dateFormatter(DateTime date){
     return "${date.year.toString()}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}"; //yyyy-mm-dd format
+  }
+
+  Event convertNewsToEvent(News news) {
+    return Event(
+      eventId: news.newsId,
+      userID: news.userId,
+      name: news.name,
+      description: news.description,
+      place: news.place,
+      eventType: EventType.SINGLE,
+      dateStart: news.dateOfEvent,
+      dateEnd: news.dateOfEvent,
+      startingTime: news.startingTime,
+      endingTime: news.endingTime,
+    );
   }
 }
