@@ -32,23 +32,11 @@ public class NewsService {
     }
 
     public List<News> getNews(HttpServletRequest request) {
-        try {
-            jwtTokenHelper.extractUserId(request);
-            return newsRepository.findAllByOrderByDateOfEventAscStartingTimeAsc();
-        }
-        catch (Throwable e){
-            throw new RuntimeException("Authorization token is invalid");
-        }
+        return newsRepository.findAllByOrderByDateOfEventAscStartingTimeAsc();
     }
 
     public Optional<News> getNewsById(Long newsId, HttpServletRequest request){
-        try {
-            jwtTokenHelper.extractUserId(request);
-            return newsRepository.findById(newsId);
-        }
-        catch (Throwable e){
-            throw new RuntimeException("Authorization token is invalid");
-        }
+        return newsRepository.findById(newsId);
     }
 
     public News addNews(News news, HttpServletRequest request){
