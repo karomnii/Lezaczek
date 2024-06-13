@@ -19,7 +19,7 @@ public class News {
     private String name;
     private String description;
     private String place;
-    private LocalDateTime dateAdded;
+    private LocalDate dateAdded;
     private LocalDate dateOfEvent;
     private LocalTime startingTime;
     private LocalTime endingTime;
@@ -27,7 +27,7 @@ public class News {
     public News() {}
 
     public News(Long newsId, Long userId, String name, String description,
-                String place, LocalDateTime dateAdded, LocalDate dateOfEvent,
+                String place, LocalDate dateAdded, LocalDate dateOfEvent,
                 LocalTime startingTime, LocalTime endingTime) {
         this.newsId = newsId;
         this.userId = userId;

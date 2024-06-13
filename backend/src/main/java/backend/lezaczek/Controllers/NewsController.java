@@ -4,9 +4,11 @@ import backend.lezaczek.Helpers.JwtTokenHelper;
 import backend.lezaczek.HttpInterfaces.ErrorResponse;
 import backend.lezaczek.HttpInterfaces.NewsResponse;
 import backend.lezaczek.HttpInterfaces.Response;
+import backend.lezaczek.Model.Event;
 import backend.lezaczek.Model.News;
 import backend.lezaczek.Services.NewsService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,17 +74,16 @@ public class NewsController {
         }
     }
 
-    @PutMapping(path = "{newsId}")
-    public ResponseEntity<?> updateNews(@PathVariable("newsId") Long newsId,
-                           @RequestParam(required = false) String name,
-                           @RequestParam(required = false) String description,
-                           @RequestParam(required = false) String dateOfEvent,
-                           @RequestParam(required = false) String place,
-                           @RequestParam(required = false) String startingTime,
-                           @RequestParam(required = false) String endingTime,
-                            HttpServletRequest request){
+    @Transactional
+    @DeleteMapping(path = "outdated/{newsId}")
+    public void deleteOutdatedNews(@PathVariable("newsId") Long newsId){
+        newsService.deleteOutdatedNews(newsId);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateNews(@RequestBody News news, HttpServletRequest request){
         try {
-            News updatedNews = newsService.updateNews(request,newsId, name, description, dateOfEvent, place, startingTime, endingTime);
+            News updatedNews = newsService.updateNews(news, request);
             return ResponseEntity.ok(new NewsResponse(List.of(updatedNews)));
         }
         catch (RuntimeException e){

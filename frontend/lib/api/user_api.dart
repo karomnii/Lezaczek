@@ -45,4 +45,20 @@ class UserApi {
     }
     return true;
   }
+  
+  Future<bool> isUserAnAdmin(User user) async {
+    Response response = await HttpHelper.get(
+        "http://localhost:8080/api/v1/user/isAdmin");
+    if (response.statusCode == 200) {
+      final List<dynamic> responseList = json.decode(response.body);
+      int isAdmin = responseList[0];
+      if(isAdmin == 1){
+        return true;
+      }
+      return false;
+    }
+    else{
+      throw Error(text: 'Couldn\'t fetch admin status');
+    }
+  }
 }
