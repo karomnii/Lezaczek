@@ -1,5 +1,7 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:frontend/pages/news/news_form.dart';
 import 'package:intl/intl.dart';
 
@@ -65,60 +67,97 @@ class NewsDetailsPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
+      body: Stack(
+        children: [
+          Padding(
             padding: EdgeInsets.all(16),
-            child: Container(
-    height: MediaQuery.of(context).size.height,
-    child:SingleChildScrollView(child:Column(
-              children: [
-                Container(
-                  child: Column(
-                    children: [
-                      createOneDetail(
-                          Icons.access_time_filled,
-                          'Date and Time',
-                          '$dateOfEvent, $startingTime - $endingTime'),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      createOneDetail(
-                          Icons.place,
-                          'Place',
-                          currentNews.place
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      createOneDetail(
-                          Icons.description,
-                          'Description',
-                          currentNews.description ?? 'No description is available'
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      createOneDetail(
-                          Icons.date_range_rounded,
-                          'Addition date',
-                          dateAdded
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-    )
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Container(
+                    height: MediaQuery.of(context).size.height * 0.735,
+                    child:SingleChildScrollView(
+                      child:Column(
+                      children: [
+                        Container(
+                          child: Column(
+                            children: [
+                              createOneDetail(
+                                  Icons.access_time_filled,
+                                  'Date and Time',
+                                  '$dateOfEvent, $startingTime - $endingTime'),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              createOneDetail(
+                                  Icons.place,
+                                  'Place',
+                                  currentNews.place
+                              ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              createOneDetail(
+                                  Icons.description,
+                                  'Description',
+                                  currentNews.description ?? 'No description is available'
+                              ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              createOneDetail(
+                                  Icons.date_range_rounded,
+                                  'Addition date',
+                                  dateAdded
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    )
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                  padding: EdgeInsets.only(bottom: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff49D3F2),
+                        elevation: 4.0,
+                        padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius:  BorderRadius.circular(10)
+                        ),
+                      ),
+                      child: Text(
+                        'Add to Planner',
+                        style: TextStyle(
+                          color: Colors.grey[850],
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+
+            ]
+          ),
+        ],
+      )
     );
   }
 
