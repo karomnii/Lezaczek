@@ -109,6 +109,7 @@ class _NewsFormState extends State<NewsForm> {
               ),
               TextFormField(
                 initialValue: description,
+                maxLines: 5,
                 decoration: InputDecoration(
                     labelText: 'Description'
                 ),

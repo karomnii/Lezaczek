@@ -418,6 +418,7 @@ class _NewsPageState extends State<NewsPage> {
             DateFormat('dd MMMM yyyy').format(date),
             style: TextStyle(
                 fontSize: 18,
+              fontWeight: FontWeight.w500
             ),
           )
         ],

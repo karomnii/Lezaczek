@@ -3,9 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/pages/news/news_form.dart';
+import 'package:frontend/services/event_service.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/news.dart';
+import '../../models/event.dart';
+import '../../models/error.dart';
 
 class NewsDetailsPage extends StatelessWidget {
   final Map<String, dynamic> news;
@@ -87,7 +90,7 @@ class NewsDetailsPage extends StatelessWidget {
                           child: Column(
                             children: [
                               createOneDetail(
-                                  Icons.access_time_filled,
+                                  Icons.access_time,
                                   'Date and Time',
                                   '$dateOfEvent, $startingTime - $endingTime'),
                               SizedBox(
@@ -102,7 +105,7 @@ class NewsDetailsPage extends StatelessWidget {
                                 height: 16,
                               ),
                               createOneDetail(
-                                  Icons.description,
+                                  Icons.description_outlined,
                                   'Description',
                                   currentNews.description ?? 'No description is available'
                               ),
@@ -133,7 +136,39 @@ class NewsDetailsPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async{
+                        Event event = convertNewsToEvent(currentNews);
+                        try{
+                          await EventService.createEvent(event);
+                          Navigator.pop(context, 'News successfully added to Planner');
+                        }
+                        catch(error){
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(
+                                    'Error'
+                                ),
+                                content: Text(error is Error ? error.text : 'Unexpected error has occurred'),
+                                contentTextStyle: const TextStyle(fontSize: 16, color: Colors.black),
+                                actions: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text(
+                                            'Close',
+                                          )),
+                                    ],
+                                  )
+                                ],
+                              )
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xff49D3F2),
                         elevation: 4.0,
@@ -168,6 +203,7 @@ class NewsDetailsPage extends StatelessWidget {
         Icon(
           icon,
           color: Color(0xff3db2cc),
+          size: 28,
         ),
         SizedBox(
             width: 16.0,
@@ -198,4 +234,20 @@ class NewsDetailsPage extends StatelessWidget {
       ],
     );
   }
+
+  Event convertNewsToEvent(News news) {
+    return Event(
+      eventId: news.newsId,
+      userID: news.userId,
+      name: news.name,
+      description: news.description,
+      place: news.place,
+      eventType: EventType.SINGLE,
+      dateStart: news.dateOfEvent,
+      dateEnd: news.dateOfEvent,
+      startingTime: news.startingTime,
+      endingTime: news.endingTime,
+    );
+  }
+
 }
