@@ -107,10 +107,17 @@ class _NewsFormState extends State<NewsForm> {
                   place = enteredValue!;
                 },
               ),
+              SizedBox(
+                height: 16,
+              ),
               TextFormField(
                 initialValue: description,
+                maxLines: 5,
                 decoration: InputDecoration(
-                    labelText: 'Description'
+                    labelText: 'Description',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
                 onSaved: (enteredValue) {
                   description = enteredValue;

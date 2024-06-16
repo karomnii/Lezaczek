@@ -23,32 +23,17 @@ public class NewsService {
     JwtTokenHelper jwtTokenHelper;
 
     @Autowired
-    private User currentUser;
-
-    @Autowired
     public NewsService(NewsRepository newsRepository, UsersRepository usersRepository) {
         this.newsRepository = newsRepository;
         this.usersRepository = usersRepository;
     }
 
-    public List<News> getNews(HttpServletRequest request) {
-        try {
-            jwtTokenHelper.extractUserId(request);
-            return newsRepository.findAllByOrderByDateOfEventAscStartingTimeAsc();
-        }
-        catch (Throwable e){
-            throw new RuntimeException("Authorization token is invalid");
-        }
+    public List<News> getNews() {
+        return newsRepository.findAllByOrderByDateOfEventAscStartingTimeAsc();
     }
 
-    public Optional<News> getNewsById(Long newsId, HttpServletRequest request){
-        try {
-            jwtTokenHelper.extractUserId(request);
-            return newsRepository.findById(newsId);
-        }
-        catch (Throwable e){
-            throw new RuntimeException("Authorization token is invalid");
-        }
+    public Optional<News> getNewsById(Long newsId){
+        return newsRepository.findById(newsId);
     }
 
     public News addNews(News news, HttpServletRequest request){
@@ -60,11 +45,9 @@ public class NewsService {
         if(!isValid){
             throw new RuntimeException("Invalid news parameters");
         }
-        //TODO: try to implement userValidation method
         Long userId;
         try {
             userId = jwtTokenHelper.extractUserId(request);
-//            userId = 2L; //test value
         }
         catch (Throwable e){
             throw new RuntimeException("Authorization token is invalid");
@@ -89,7 +72,6 @@ public class NewsService {
             Long userId;
             try {
                 userId = jwtTokenHelper.extractUserId(request);
-//              userId = 2L; //test value
             }
             catch (Throwable e){
                 throw new RuntimeException("Authorization token is invalid");
@@ -113,7 +95,6 @@ public class NewsService {
         Long userId;
         try {
             userId = jwtTokenHelper.extractUserId(request);
-//            userId = 2L; //test value
         }
         catch (Throwable e){
             throw new RuntimeException("Authorization token is invalid");
