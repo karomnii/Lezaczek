@@ -2,11 +2,11 @@
 
 # Required technologies and applications
 
-[Java 17] (https://www.oracle.com/java/technologies/downloads/#java17) &nbsp;&nbsp; //Setting PATH and JAVA_HOME is needed
+[Java 17](https://www.oracle.com/java/technologies/downloads/#java17) &nbsp;&nbsp; //Setting PATH and JAVA_HOME is needed
 
-[MSQL SERVER] (https://www.microsoft.com/en-us/sql-server/sql-server-downloads) &nbsp;&nbsp; //We recommend the developer version, default settings
+[MSQL SERVER](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) &nbsp;&nbsp; //We recommend the developer version, default settings
 
-[Android Studio] (https://developer.android.com/studio)
+[Android Studio](https://developer.android.com/studio)
 
 You will need to install maven and makefile, for this we reccomend the chocolatey packet manager for windows
 
