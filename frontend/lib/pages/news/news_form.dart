@@ -80,7 +80,10 @@ class _NewsFormState extends State<NewsForm> {
               TextFormField(
                 initialValue: name,
                 decoration: InputDecoration(
-                  labelText: 'News name'
+                  labelText: 'News name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
                 validator: (enteredValue){
                   if(enteredValue == null || enteredValue.isEmpty){
@@ -92,10 +95,16 @@ class _NewsFormState extends State<NewsForm> {
                   name = enteredValue!;
                 },
               ),
+              SizedBox(
+                height: 16,
+              ),
               TextFormField(
                 initialValue: place,
                 decoration: InputDecoration(
-                    labelText: 'Place'
+                    labelText: 'Place',
+                    border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
                 ),
                 validator: (enteredValue){
                   if(enteredValue == null || enteredValue.isEmpty){
