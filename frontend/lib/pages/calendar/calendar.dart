@@ -122,6 +122,7 @@ class _CalendarState extends State<Calendar> {
         });
       });
       if (mounted) {
+        Navigator.of(context).pop();
         Navigator.pop(context, "Event updated successfully");
       }
     });
@@ -142,7 +143,6 @@ class _CalendarState extends State<Calendar> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -247,9 +247,10 @@ class _CalendarState extends State<Calendar> {
                               vertical: 4.0, horizontal: 8.0),
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
-                            color: Colors.blue,
+                            color: Color(0xff41BF6D),
                             borderRadius: BorderRadius.circular(8.0),
-                            border: Border.all(color: Colors.blue, width: 2.0),
+                            border: Border.all(
+                                color: Color(0xff41BF6D), width: 2.0),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,14 +260,14 @@ class _CalendarState extends State<Calendar> {
                                 style: TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                               ),
                               Text(
                                 event.description ?? '',
                                 style: TextStyle(
                                   fontSize: 14.0,
-                                  color: Colors.white70,
+                                  color: Colors.black,
                                 ),
                               ),
                               SizedBox(height: 8.0),
@@ -274,7 +275,7 @@ class _CalendarState extends State<Calendar> {
                                 '${event.startingTime.format(context)} - ${event.endingTime.format(context)}',
                                 style: TextStyle(
                                   fontSize: 14.0,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
@@ -310,7 +311,16 @@ class _CalendarState extends State<Calendar> {
           ),
           Text(
             DateFormat('EEEE, MMM d').format(selectedDate),
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: selectedDate.day == DateTime.now().day
+                  ? FontWeight.bold
+                  : FontWeight.normal,
+              color: selectedDate.weekday == DateTime.saturday ||
+                      selectedDate.weekday == DateTime.sunday
+                  ? Colors.red[900]
+                  : Colors.black,
+            ),
           ),
           IconButton(
             icon: Icon(Icons.arrow_forward),

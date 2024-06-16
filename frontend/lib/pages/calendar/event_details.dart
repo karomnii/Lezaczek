@@ -8,7 +8,8 @@ class EventDetails extends StatelessWidget {
   final VoidCallback onDelete;
   final Function(Event) onUpdate;
 
-  EventDetails({required this.event, required this.onDelete, required this.onUpdate});
+  EventDetails(
+      {required this.event, required this.onDelete, required this.onUpdate});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +55,8 @@ class EventDetails extends StatelessWidget {
             icon: Icon(Icons.delete),
             onPressed: () {
               onDelete();
-              Navigator.pop(context, "Event deleted successfully"); // Go back to the calendar page after deletion
+              Navigator.pop(context,
+                  "Event deleted successfully"); // Go back to the calendar page after deletion
             },
           ),
         ],
@@ -71,11 +73,14 @@ class EventDetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDescriptionField(currentEvent.description),
+                _buildDescriptionField(
+                    currentEvent.description ?? 'No description'),
                 SizedBox(height: 16.0),
-                _buildDetailRow(Icons.location_on, 'Place', currentEvent.place ?? 'Not specified'),
+                _buildDetailRow(Icons.location_on, 'Place',
+                    currentEvent.place ?? 'Not specified'),
                 SizedBox(height: 16.0),
-                _buildDetailRow(Icons.event, 'Type', currentEvent.eventType.toString().split('.').last),
+                _buildDetailRow(Icons.event, 'Type',
+                    currentEvent.eventType.toString().split('.').last),
                 SizedBox(height: 16.0),
                 _buildEventSpecificDetails(currentEvent, context),
               ],
@@ -106,8 +111,11 @@ class EventDetails extends StatelessWidget {
             borderRadius: BorderRadius.circular(8.0),
           ),
           child: Text(
-            description ?? 'No description available',
-            style: TextStyle(fontSize: 16.0),
+            description!.isEmpty ? 'No description available' : description,
+            style: TextStyle(
+              fontSize: 16.0,
+              color: description.isEmpty ? Colors.grey[400] : Colors.black,
+            ),
           ),
         ),
       ],
@@ -117,7 +125,7 @@ class EventDetails extends StatelessWidget {
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: Colors.blue, size: 28.0),
+        Icon(icon, color: Color(0xff41BF6D), size: 28.0),
         SizedBox(width: 16.0),
         Expanded(
           child: Column(
@@ -182,7 +190,7 @@ class EventDetails extends StatelessWidget {
   Widget _buildTimeRow(String label, String time, BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.access_time, color: Colors.blue, size: 28.0),
+        Icon(Icons.access_time, color: Color(0xff41BF6D), size: 28.0),
         SizedBox(width: 16.0),
         Expanded(
           child: Column(
