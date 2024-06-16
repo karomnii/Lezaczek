@@ -95,7 +95,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                             Icons.calendar_month_rounded,
                             size: 30,
                           ),
-                          label: 'Plan zajęć',
+                          label: 'Planner',
                         ),
                         NavigationDestination(
                           selectedIcon: Icon(
@@ -106,7 +106,7 @@ class _TemplateScreenState extends State<TemplateScreen> {
                           icon: Icon(Icons.newspaper,
                             size: 30,
                           ),
-                          label: 'Wydarzenia',
+                          label: 'News',
                         ),
                       ],
                       backgroundColor: Colors.white38,
