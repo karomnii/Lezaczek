@@ -1,7 +1,41 @@
 ﻿# Lezaczek
+
+# Required technologies and applications
+
+[Java 17](https://www.oracle.com/java/technologies/downloads/#java17) &nbsp;&nbsp; //Setting PATH and JAVA_HOME is needed
+
+[MSQL SERVER](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) &nbsp;&nbsp; //We recommend the developer version, default settings
+
+[Android Studio](https://developer.android.com/studio)
+
+You will need to install maven and makefile, for this we reccomend the chocolatey packet manager for windows
+
+Open cmd with Admin privileges and install chocolatey:
+
+```
+winget install Chocolatey.Chocolatey
+```
+
+Restart the cmd and install make and maven:
+
+```
+choco install maven
+```
+
+```
+choco install make
+```
+
+Enable TCP/IP connection with the database:
+1. Open SQL server configuration manager
+2. Choose SQL Native Client configuration from the leftside menu
+3. Choose Client Protocols
+4. Enable TCP/IP option
+
+
  
 ## Frontend
-In order to run frontend, you need to have installed Android Studio
+In order to run frontend
 1. Download flutter SDK zip from: https://docs.flutter.dev/get-started/install/windows/mobile?tab=download
 2. Extract files. **Important:** developers suggest that you should consider ```C:\users\{username}``` or ```C:\Users\{username}\AppData\Local``` paths. You shouldn't install flutter inside a path that (1) contains special characters or spaces or inside path (2) that requires elevated privileges or when your path meets both of these conditions
 3. Update your environment variable PATH by adding *(unzip directory)\flutter\bin folder*
@@ -28,21 +62,13 @@ If your emulator is already set up:
 1. Run the device. It will be automatically selected as the device that can run 'main.dart' configuration
 2. Run 'main.dart' configuration. After a while, the application will start.
 **Important:** if you're experiencing troubles with starting virtual device, edit its configuration by switching **Emulated Performance** -> **Graphics** to *Software*. If it didn't make any difference, switch to *Hardware*
-### How to run this project using Chrome or Edge browser? No avalible instructions for conncetion with backend yet
-1. Click *no device selected*
-2. Choose Chrome (web) or Edge (web) from the list
-3. Run 'main.dart' configuration. After a while, the application will start.
 
-## Backend to develop
-To locally run backend you have to have MS SQL server running and have the TCP/IP option in Sql server configuration manager enabled
+## Database
 
-Have apache maven installed our version is 3.9.6
+Open the repository database folder, choose the lezaczek.sql file
+Open this file in microsoft sql server managment studio and execute the querry
 
-Have Java jdk with JAVA_HOME and Path set correctly, our version is jdk-17
-
-Have the make installed for using a makefile
-
-Import the database from database/lezaczek.sql
+## Backend
 
 To connect backend to the database, export these Environment variables with correct values:
 - SQL_SERVER_TESTS (in format jdbc:sqlserver://(hostname);databaseName=(name);)
@@ -52,7 +78,11 @@ To connect backend to the database, export these Environment variables with corr
 
 Alternatively you can edit **application.test.test.properties** file in *backend/src/main/resources*
 
-If these are correctly set you should be able to run **make run-test-build-windows** in *backend* folder
+If these are correctly set you should be able to run this command in the cmd in *backend* folder
+
+```
+ make run-test-build-windows
+```
 
 ## API Description
 
